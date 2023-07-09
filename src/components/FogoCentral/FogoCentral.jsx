@@ -1,7 +1,10 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
-
+import pistol_dark from "../../assets/pistol_dark.png";
+import pistol from "../../assets/pistol.png";
+import revolver_dark from "../../assets/revolver_dark.png";
+import revolver from "../../assets/revolver.png";
 const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState({
     first: [0, 0, 0, 0, 0],
@@ -186,9 +189,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
           >
             <span>Pistola</span>
             <img
-              src={require(`../../assets/pistol${
-                gun === "pistol" ? "_dark" : ""
-              }.png`)}
+              src={gun == "pistol" ? pistol_dark : pistol}
               alt="pistol"
               height={60}
               width={60}
@@ -206,9 +207,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
             <span>Revolver</span>
 
             <img
-              src={require(`../../assets/revolver${
-                gun === "revolver" ? "_dark" : ""
-              }.png`)}
+              src={gun == "revolver" ? revolver_dark : revolver}
               alt="revolver"
               height={60}
               width={60}
