@@ -86,7 +86,9 @@ const Ranking = () => {
   };
 
   const fetchCarabina22MiraAberta = useCallback(async () => {
+    console.log("aqui");
     setShowCategory(false);
+    setShowGun(false);
     const querySnapshot = await getDocs(
       query(
         collection(db, "exam-results"),
@@ -104,7 +106,7 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
 
-    setRanking(data);
+    setRanking(removeDuplicateNames(data));
   }, []);
   const fetchFogoCentral = async () => {
     setShowGun(true);
