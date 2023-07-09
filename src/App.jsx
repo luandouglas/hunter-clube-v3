@@ -1,23 +1,20 @@
 import React from "react";
 import {
-  BrowserRouter as Router,
   Route,
-  Routes,
   createBrowserRouter,
   createRoutesFromElements,
   RouterProvider,
+  createHashRouter,
 } from "react-router-dom";
 
 import Home from "./pages/Home";
-import About from "./pages/About";
-import Layout from "./components/Layout";
 import Events from "./pages/Events";
 import Register from "./pages/Register";
 import Users from "./pages/Users";
 import UserNew from "./pages/UserNew";
 import Ranking from "./pages/Ranking";
 
-const router = createBrowserRouter(
+const router = createHashRouter(
   createRoutesFromElements(
     <>
       <Route path="/" element={<Home />} />
