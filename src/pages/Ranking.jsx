@@ -85,8 +85,7 @@ const Ranking = () => {
     }
   };
 
-  const fetchCarabina22MiraAberta = useCallback(async () => {
-    console.log("aqui");
+  const fetchCarabina22MiraAberta = async () => {
     setShowCategory(false);
     setShowGun(false);
     const querySnapshot = await getDocs(
@@ -105,9 +104,9 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
-
+    console.log(data);
     setRanking(removeDuplicateNames(data));
-  }, []);
+  };
   const fetchFogoCentral = async () => {
     setShowGun(true);
 
