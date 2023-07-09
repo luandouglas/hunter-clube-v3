@@ -88,22 +88,22 @@ const Register = () => {
   };
 
   const saveResult = async () => {
-    const collectionRef = collection(db, "exam-results");
     const data = {
       eventId: id,
       name: result.name,
       examId: result.examId,
       results: {
         points: result.points,
-        level: result.level,
         pointsCounter: result.pointsCounter,
         total: result.total,
+        ...(result.level && { level: result.level }),
         ...(result.gun && { gun: result.gun }),
       },
       userId: result.userId,
     };
     try {
-      const docRef = await addDoc(collectionRef, data);
+      const docRef = await addDoc(collection(db, "exam-results"), data);
+
       if (docRef) {
         if (result.gun) {
           const querySnapshot = await getDocs(
@@ -163,7 +163,9 @@ const Register = () => {
           navigate("/events");
         }, 5000);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log(error);
+    }
     setOpen(false);
   };
   const addOrUpdateExam = (obj, newExam, date) => {
@@ -177,7 +179,9 @@ const Register = () => {
     } else {
       exams.push({ date: date, pontuation: newExam.results.total });
     }
-    obj.level = newExam.results.level;
+    if (obj.results?.level) {
+      obj.level = newExam.results.level;
+    }
     obj.pontuation = obj.exams.reduce((acc, exam) => acc + exam.pontuation, 0);
 
     return obj;
@@ -195,7 +199,9 @@ const Register = () => {
       { date: event.date, pontuation: obj.results.total },
     ];
     temp.firstRankingDate = event.date;
-    temp.level = obj.results.level;
+    if (obj.results?.level) {
+      temp.level = obj.results.level;
+    }
     temp.name = obj.name;
     temp.examId = obj.examId;
     if (obj.results.gun) {
@@ -231,7 +237,6 @@ const Register = () => {
                   key={e.tipo_prova}
                   onClick={() => {
                     setSelectedExam(e.tipo_prova);
-                    console.log(e.tipo_prova);
                   }}
                   className={
                     "flex flex-col w-48 h-48 items-center py-4 px-7 cursor-pointer rounded-lg  " +
