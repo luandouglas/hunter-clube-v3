@@ -22,9 +22,11 @@ import SaquePreciso from "../components/SaquePreciso/SaquePreciso";
 import Layout from "../components/Layout";
 import { exams } from "../utils";
 import Autocomplete from "../components/Autocomplete/Autocomplete";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 const Register = () => {
+  const navigate = useNavigate();
+
   const [open, setOpen] = React.useState(false);
   const [result, setResult] = React.useState();
   const [showToast, setShowToast] = React.useState(false);
@@ -87,7 +89,6 @@ const Register = () => {
 
   const saveResult = async () => {
     const collectionRef = collection(db, "exam-results");
-    console.log(result);
     const data = {
       eventId: id,
       name: result.name,
@@ -159,6 +160,7 @@ const Register = () => {
         setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
+          location.reload();
         }, 5000);
       }
     } catch (error) {}
