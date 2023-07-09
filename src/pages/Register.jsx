@@ -160,7 +160,7 @@ const Register = () => {
         setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
-          location.reload();
+          navigate("/events");
         }, 5000);
       }
     } catch (error) {}
