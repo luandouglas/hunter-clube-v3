@@ -120,9 +120,8 @@ const Live = () => {
           fetchRanking("q00RXisO4sQqOZ8JfqvW", "", "master")
           current = 1;
           break;
-
       }
-    }, 30000);
+    }, 15000);
   }, [])
 
   const fetchRanking = async (exam, gun, level) => {
