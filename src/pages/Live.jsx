@@ -41,31 +41,26 @@ const Live = () => {
       switch (current) {
         case 1:
           setLabel("Carabina de precisão 22 a 25 metros")
-
-          fetchRanking("EfvFedkhOSML884He43N")
+          fetchRanking("EfvFedkhOSML884He43N", "", "")
           current++;
           break;
         case 2:
           setLabel("Saque Preciso - Iniciante (Pistola)")
-
           fetchRanking("KkAF46R6WrwZWq1FNhvX", "pistol", "beginner")
           current++;
           break;
         case 3:
           setLabel("Saque Preciso - Master (Pistola)")
-
           fetchRanking("KkAF46R6WrwZWq1FNhvX", "pistol", "master")
           current++;
           break;
         case 4:
           setLabel("Saque Preciso - Iniciante (Revolver)")
-
           fetchRanking("KkAF46R6WrwZWq1FNhvX", "revolver", "beginner")
           current++;
           break;
         case 5:
           setLabel("Saque Preciso - Master (Revolver)")
-
           fetchRanking("KkAF46R6WrwZWq1FNhvX", "revolver", "master")
           current++;
           break;
@@ -137,7 +132,7 @@ const Live = () => {
     if (guns.length > 0 && !gun) return;
     setRanking([]);
     if (ruleOne) {
-      if (gun) {
+      if (gun !== "") {
         setShowGun(true);
         const querySnapshot = await getDocs(
           query(
@@ -301,16 +296,6 @@ const Live = () => {
                 <th scope="col" className="px-6 py-3">
                   Nome
                 </th>
-                {canSee && (
-                  <th scope="col" className="px-6 py-3">
-                    Categoria
-                  </th>
-                )}
-                {showGun && (
-                  <th scope="col" className="px-6 py-3">
-                    Armamento
-                  </th>
-                )}
                 <th scope="col" className="px-6 py-3">
                   Pontuação
                 </th>
@@ -356,21 +341,6 @@ const Live = () => {
                   >
                     {el.name}
                   </td>
-                  {canSee && (
-                    <td className="px-6 py-4 text-gray-900">
-                      {el.level == "beginner"
-                        ? "Inciante"
-                        : el.level == "master"
-                          ? "Master"
-                          : "Super Master"}
-                    </td>
-                  )}
-
-                  {el.gun && (
-                    <td className="px-6 py-4 text-gray-900">
-                      {el.gun == "pistol" ? "Pistola" : "Revolver"}
-                    </td>
-                  )}
                   <td className="text-gray-900 px-6 py-4">{el.pontuation}</td>
                   {normalizeArray(el.exams).map((e, j) =>
                     <td
