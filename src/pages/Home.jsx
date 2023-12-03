@@ -149,6 +149,7 @@ const Home = () => {
   }
 
   const normalizeArray = (inputArray) => {
+    console.log(inputArray);
     // Lista de datas desejadas
     const desiredDates = [
       '2023-04-02',
@@ -159,7 +160,7 @@ const Home = () => {
       '2023-09-10',
       '2023-10-08',
       '2023-11-05',
-      '2023-12-03'
+      '2023-12-02'
     ];
 
     // Crie um objeto para armazenar os valores do array normalizado
