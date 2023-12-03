@@ -127,7 +127,7 @@ const Live = () => {
           break;
 
       }
-    }, 60000);
+    }, 30000);
   }, [])
 
   const fetchRanking = async (exam, gun, level) => {
