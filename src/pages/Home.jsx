@@ -158,7 +158,8 @@ const Home = () => {
       '2023-08-06',
       '2023-09-10',
       '2023-10-08',
-      '2023-11-05'
+      '2023-11-05',
+      '2023-12-03'
     ];
 
     // Crie um objeto para armazenar os valores do array normalizado
@@ -299,6 +300,9 @@ const Home = () => {
                 </th>
                 <th scope="col" className="px-6 py-3 text-center ">
                   Nov
+                </th>
+                <th scope="col" className="px-6 py-3 text-center ">
+                  Dez
                 </th>
               </tr>
             </thead>
