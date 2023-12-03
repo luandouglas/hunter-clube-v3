@@ -1,5 +1,6 @@
 import React, { PropsWithChildren } from "react";
 import { Link } from "react-router-dom";
+import Img from "../assets/logo_site.png";
 
 const Layout = (props: PropsWithChildren) => {
   return (
@@ -35,7 +36,7 @@ const Layout = (props: PropsWithChildren) => {
         <div className="h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800">
           <button className="flex items-center pl-2.5 mb-5">
             <img
-              src="https://www.hunterclube.com.br/img/logo_site.png"
+              src={Img}
               className="h-6 mr-3 sm:h-7"
               alt="Clube Hunter Logo"
             />
