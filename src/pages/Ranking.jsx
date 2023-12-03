@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { db } from "../../firebaseConfig";
 import Layout from "../components/Layout";
 import { exams } from "../utils";
@@ -390,13 +390,13 @@ const Ranking = () => {
                   <td className=" text-gray-900 px-6 py-4">
                     {el.results.total}
                   </td>
-                  {event.status !== 'Finalizado' &&
+                  {/* {event.status !== 'Finalizado' &&
                     <Link to={`/register/${id}/edit/${el.id}`}>
                       <button className="bg-blue-gray-500 px-4 py-2 rounded-lg text-white disabled:bg-blue-gray-200 disabled:text-gray-600">
                         Editar resultado
                       </button>
                     </Link>
-                  }
+                  } */}
                   {/* {el.exams.map((e, index) => (
                     <td
                       className={`text-gray-900 px-6 py-4 ${
