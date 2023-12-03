@@ -149,7 +149,6 @@ const Home = () => {
   }
 
   const normalizeArray = (inputArray) => {
-    console.log(inputArray);
     // Lista de datas desejadas
     const desiredDates = [
       '2023-04-02',
