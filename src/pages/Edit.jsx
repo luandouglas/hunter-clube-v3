@@ -38,7 +38,7 @@ const Register = () => {
   const [selectedUser, setSelectedUser] = React.useState("");
   const [selectedExam, setSelectedExam] = React.useState("");
   const [step, setStep] = React.useState(0);
-  const { id } = useParams();
+  const { eventId, id } = useParams();
 
   const fetchEvent = useCallback(async () => {
     if (!id) return;
@@ -59,10 +59,33 @@ const Register = () => {
 
     setUsers(usersData);
   }, [id]);
+  const fetchResult = async () => {
+    console.log(eventId, id);
+    try {
+      console.log('entrei');
+      if (eventId) {
 
+        const examResultSnapshot = await query(
+          getDocs(collection(db, "exam-results")),
+          where('eventId', '==', eventId)
+        )
+        console.log(examResultSnapshot);
+
+        examResultSnapshot.forEach((doc) => {
+          // Cada documento que corresponde à consulta
+          console.log("ID do usuário:", doc.id);
+          console.log("Dados do usuário:", doc.data());
+        });
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+  }
   useEffect(() => {
-    fetchEvent();
-    fetchUsers();
+    fetchResult();
+    // fetchEvent();
+    // fetchUsers();
   }, []);
 
   const getExamSelected = () => {

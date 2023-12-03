@@ -10,7 +10,7 @@ import { db } from "../../firebaseConfig";
 import Layout from "../components/Layout";
 import { exams } from "../utils";
 
-const Home = () => {
+const Geral = () => {
   const [ranking, setRanking] = useState([]);
 
   const [selectedExam, setSelectedExam] = useState("");
@@ -55,7 +55,7 @@ const Home = () => {
         );
         const data = [];
         querySnapshot.docs.forEach((el) => data.push(el.data()));
-        setRanking(data);
+        setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
       } else {
         setShowGun(false);
         setCanSee(true);
@@ -69,7 +69,8 @@ const Home = () => {
         );
         const data = [];
         querySnapshot.docs.forEach((el) => data.push(el.data()));
-        setRanking(data);
+        setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
+
       }
     } else {
       setShowGun(false);
@@ -83,7 +84,8 @@ const Home = () => {
       );
       const data = [];
       querySnapshot.docs.forEach((el) => data.push(el.data()));
-      setRanking(data);
+      setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
+
     }
   };
 
@@ -113,6 +115,28 @@ const Home = () => {
     setSelectedGun(value);
   };
 
+  const trataResultado = (a) => {
+    return a
+      .map(e => ({ ...e, exams: e.exams.filter(j => j.pontuation > 0) }))
+      .filter(e => e.exams.length >= 5);
+  }
+
+  const pegaOs8 = a => {
+    const oitoMaioresValores = a.exams
+      .map(exam => exam.pontuation)
+      .sort((a, b) => b - a)
+      .slice(0, 8)
+    const valor = oitoMaioresValores.reduce((acc, valor) => acc + valor, 0)
+
+    const exams = a.exams.map(exam => ({
+      ...exam,
+      destaque: oitoMaioresValores.includes(exam.pontuation)
+    }));
+
+    return { pontuation: valor, exams: exams }
+
+  }
+
   const returnClass = (position) => {
     if (position === 1) {
       return "w-1 px-6 py-3 bg-gold text-white whitespace-nowrap dark:text-white text-center";
@@ -124,29 +148,6 @@ const Home = () => {
       return "w-1 px-6 py-3 text-center text-gray-900 whitespace-nowrap dark:text-white";
     }
   };
-
-  const getPontuationByDate = (a, b) => {
-    const getPontuation = (date) => b.exams.find(e => e.date === date)?.pontuation
-    console.log(a);
-    switch (a) {
-      case '2023-04-02':
-        return getPontuation('2023-04-02')
-      case '2023-05-07':
-        return getPontuation('2023-05-07')
-      case '2023-07-09':
-        return getPontuation('2023-07-09')
-      case '2023-08-06':
-        return getPontuation('2023-08-06')
-      case '2023-09-10':
-        return getPontuation('2023-09-10')
-      case '2023-10-08':
-        return getPontuation('2023-10-08')
-      case '2023-11-05':
-        return getPontuation('2023-11-05')
-      default:
-        break;
-    }
-  }
 
   const normalizeArray = (inputArray) => {
     // Lista de datas desejadas
@@ -173,7 +174,7 @@ const Home = () => {
     inputArray.forEach(item => {
       const formattedDate = item.date.split('T')[0];
       if (desiredDates.includes(formattedDate)) {
-        normalizedObj[formattedDate].push({ date: formattedDate, pontuation: item.pontuation });
+        normalizedObj[formattedDate].push({ date: formattedDate, pontuation: item.pontuation, destaque: item.destaque });
       }
     });
 
@@ -190,7 +191,7 @@ const Home = () => {
 
   return (
     <Layout>
-      <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking</h1>
+      <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking Final</h1>
 
       <br></br>
 
@@ -334,10 +335,9 @@ const Home = () => {
                   {normalizeArray(el.exams).map((e, j) =>
                     <td
                       key={j}
-                      className={`text-gray-900 px-6 py-4 text-center`}
+                      className={`text-gray-900 px-6 py-4 text-center ${e.destaque && 'bg-blue-gray-300'}`}
                     >
                       {e.pontuation}
-
                     </td>
                   )}
                 </tr>
@@ -350,4 +350,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Geral;

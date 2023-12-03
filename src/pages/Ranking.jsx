@@ -1,13 +1,13 @@
-import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
-import { useCallback, useEffect, useState } from "react";
+import { collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../firebaseConfig";
-import { exams } from "../utils";
 import Layout from "../components/Layout";
-import { useParams } from "react-router-dom";
+import { exams } from "../utils";
 
 const Ranking = () => {
   const [ranking, setRanking] = useState([]);
-
+  const navigate = useNavigate()
   const [selectedExam, setSelectedExam] = useState("");
   const [selectedLevel, setSelectedLevel] = useState();
   const [selectedGun, setSelectedGun] = useState("");
@@ -17,8 +17,13 @@ const Ranking = () => {
 
   const [showCategory, setShowCategory] = useState(true);
   const [showGun, setShowGun] = useState(true);
-  const [eventId, setEventId] = useState("");
+  const [event, setEvent] = useState()
   const { id } = useParams();
+
+  useEffect(() => {
+    fetchEvent()
+  }, []);
+
   const fetchRanking = async () => {
     if (selectedExam === "") return;
     if (selectedExam != "EfvFedkhOSML884He43N") setShowCategory(true);
@@ -31,6 +36,16 @@ const Ranking = () => {
     else if (selectedExam == "q00RXisO4sQqOZ8JfqvW") fetchSM22Apoiado();
     else if (selectedExam == "qnpGZ7u0IW01TZQ4olPn") fetchPercursoCaca();
   };
+
+  const fetchEvent = async () => {
+    const eventDocRef = doc(db, "events", id);
+    const eventDocSnapshot = await getDoc(eventDocRef);
+
+    if (eventDocSnapshot.exists()) {
+      const eventData = eventDocSnapshot.data();
+      setEvent(eventData);
+    }
+  }
 
   const removeDuplicateNames = (persons) => {
     const map = new Map();
@@ -46,7 +61,6 @@ const Ranking = () => {
 
     return Array.from(map.values());
   };
-
   const handleChangeExam = (value) => {
     setSelectedExam(value);
     const find = exams.find((e) => e.id == value);
@@ -68,11 +82,9 @@ const Ranking = () => {
   const handleChangeLevel = (value) => {
     setSelectedLevel(value);
   };
-
   const handleChangeGun = (value) => {
     setSelectedGun(value);
   };
-
   const returnClass = (position) => {
     if (position === 1) {
       return "w-1 px-6 py-3 bg-gold text-white whitespace-nowrap dark:text-white text-center";
@@ -84,7 +96,6 @@ const Ranking = () => {
       return "w-1 px-6 py-3 text-center text-gray-900 whitespace-nowrap dark:text-white";
     }
   };
-
   const fetchCarabina22MiraAberta = async () => {
     setShowCategory(false);
     setShowGun(false);
@@ -103,7 +114,7 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
     console.log(data);
     setRanking(removeDuplicateNames(data));
   };
@@ -127,7 +138,7 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
     setRanking(removeDuplicateNames(data));
   };
@@ -145,7 +156,7 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
     setRanking(removeDuplicateNames(data));
   };
   const fetchSaquePreciso = async () => {
@@ -168,7 +179,7 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
     setRanking(removeDuplicateNames(data));
   };
@@ -186,7 +197,7 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
     setRanking(removeDuplicateNames(data));
   };
@@ -209,7 +220,7 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
     setRanking(removeDuplicateNames(data));
   };
@@ -232,7 +243,7 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
     setRanking(removeDuplicateNames(data));
   };
@@ -247,9 +258,14 @@ const Ranking = () => {
       )
     );
     const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
     setRanking(removeDuplicateNames(data));
   };
+  const handleEditResult = async (event) => {
+    console.log(event);
+
+    navigate("/events");
+  }
 
   return (
     <Layout>
@@ -362,8 +378,8 @@ const Ranking = () => {
                       {el.results.level == "beginner"
                         ? "Inciante"
                         : el.results.level == "master"
-                        ? "Master"
-                        : "Super Master"}
+                          ? "Master"
+                          : "Super Master"}
                     </td>
                   )}
                   {el.results.gun && (
@@ -371,9 +387,16 @@ const Ranking = () => {
                       {el.results.gun == "pistol" ? "Pistola" : "Revolver"}
                     </td>
                   )}
-                  <td className=" text-gray-900  px-6 py-4">
+                  <td className=" text-gray-900 px-6 py-4">
                     {el.results.total}
                   </td>
+                  {event.status !== 'Finalizado' &&
+                    <Link to={`/register/${id}/edit/${el.id}`}>
+                      <button className="bg-blue-gray-500 px-4 py-2 rounded-lg text-white disabled:bg-blue-gray-200 disabled:text-gray-600">
+                        Editar resultado
+                      </button>
+                    </Link>
+                  }
                   {/* {el.exams.map((e, index) => (
                     <td
                       className={`text-gray-900 px-6 py-4 ${
