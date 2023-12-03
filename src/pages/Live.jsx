@@ -41,32 +41,110 @@ const Live = () => {
       switch (current) {
         case 1:
           setLabel("Carabina de precisão 22 a 25 metros")
+
+          fetchRanking("EfvFedkhOSML884He43N")
+          current++;
+          break;
+        case 2:
+          setLabel("Saque Preciso - Iniciante (Pistola)")
+
+          fetchRanking("KkAF46R6WrwZWq1FNhvX", "pistol", "beginner")
+          current++;
+          break;
+        case 3:
+          setLabel("Saque Preciso - Master (Pistola)")
+
+          fetchRanking("KkAF46R6WrwZWq1FNhvX", "pistol", "master")
+          current++;
+          break;
+        case 4:
+          setLabel("Saque Preciso - Iniciante (Revolver)")
+
+          fetchRanking("KkAF46R6WrwZWq1FNhvX", "revolver", "beginner")
+          current++;
+          break;
+        case 5:
+          setLabel("Saque Preciso - Master (Revolver)")
+
+          fetchRanking("KkAF46R6WrwZWq1FNhvX", "revolver", "master")
+          current++;
+          break;
+        case 6:
+          setLabel("Silhueta Metálica 22 e Precisão - Iniciante")
+          fetchRanking("KkAF46R6WrwZWq1FNhvX", "", "beginner")
+          current++;
+          break;
+        case 7:
+          setLabel("Silhueta Metálica 22 e Precisão - Master")
+          fetchRanking("KkAF46R6WrwZWq1FNhvX", "", "master")
+          current++;
+          break;
+        case 8:
+          setLabel("Silhueta Metálica 22 e Precisão - Super Master")
+          fetchRanking("KkAF46R6WrwZWq1FNhvX", "", "super-master")
+          current++;
+          break;
+        case 9:
+          setLabel("Fogo Central - Iniciante (Pistola)")
+          fetchRanking("YchOCURkmZCTsymgHwG0", "pistol", "beginner")
+          current++;
+          break;
+        case 10:
+          setLabel("Fogo Central - Master (Pistola)")
+          fetchRanking("YchOCURkmZCTsymgHwG0", "pistol", "master")
+          current++;
+          break;
+        case 11:
+          setLabel("Fogo Central - Iniciante (Revolver)")
+          fetchRanking("YchOCURkmZCTsymgHwG0", "revolver", "beginner")
+          current++;
+          break;
+        case 12:
+          setLabel("Fogo Central - Master (Revolver)")
           setSelectedExam("EfvFedkhOSML884He43N")
-          fetchRanking()
+          fetchRanking("YchOCURkmZCTsymgHwG0", "revolver", "master")
+          current++;
+          break;
+        case 13:
+          setLabel("Small Pistol - Iniciante")
+          fetchRanking("cpxPRShLAuDSmBwFKHXw", "", "beginner")
+          current++;
+          break;
+        case 14:
+          setLabel("Small Pistol - Master")
+          fetchRanking("cpxPRShLAuDSmBwFKHXw", "", "master")
+          current++;
+          break;
+        case 15:
+          setLabel("Silhueta Metálica Apoiado - Iniciante")
+          fetchRanking("q00RXisO4sQqOZ8JfqvW", "", "beginner")
+          current++;
+          break;
+        case 16:
+          setLabel("Silhueta Metálica Apoiado - Master")
+          fetchRanking("q00RXisO4sQqOZ8JfqvW", "", "master")
+          current = 1;
           break;
 
-        default:
-          break;
       }
-    }, 6000);
+    }, 60000);
   }, [])
 
-  const fetchRanking = async () => {
-    const ruleOne = selectedExam != "EfvFedkhOSML884He43N";
-    console.log(ruleOne, selectedExam);
-    if (!selectedExam) return;
-    if (!selectedLevel && ruleOne) return;
-    if (guns.length > 0 && !selectedGun) return;
+  const fetchRanking = async (exam, gun, level) => {
+    const ruleOne = exam != "EfvFedkhOSML884He43N";
+    if (!exam) return;
+    if (!level && ruleOne) return;
+    if (guns.length > 0 && !gun) return;
     setRanking([]);
     if (ruleOne) {
-      if (selectedGun) {
+      if (gun) {
         setShowGun(true);
         const querySnapshot = await getDocs(
           query(
             collection(db, "levels"),
-            where("examId", "==", selectedExam),
-            where("level", "==", selectedLevel),
-            where("gun", "==", selectedGun),
+            where("examId", "==", exam),
+            where("level", "==", level),
+            where("gun", "==", gun),
             orderBy("pontuation", "desc")
           )
         );
@@ -79,8 +157,8 @@ const Live = () => {
         const querySnapshot = await getDocs(
           query(
             collection(db, "levels"),
-            where("examId", "==", selectedExam),
-            where("level", "==", selectedLevel),
+            where("examId", "==", exam),
+            where("level", "==", level),
             orderBy("pontuation", "desc")
           )
         );
@@ -95,13 +173,12 @@ const Live = () => {
       const querySnapshot = await getDocs(
         query(
           collection(db, "levels"),
-          where("examId", "==", selectedExam),
+          where("examId", "==", exam),
           orderBy("pontuation", "desc")
         )
       );
       const data = [];
       querySnapshot.docs.forEach((el) => data.push(el.data()));
-      console.log(data);
       setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
 
     }
@@ -209,69 +286,10 @@ const Live = () => {
 
 
   return (
-    <>
+    <div className="p-6">
       <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking Final</h1>
-
+      <h2 className="text-gray-700 py-4 font-bold text-5xl">{label}</h2>
       <br></br>
-
-      <div className="relative w-full flex flex-row items-center gap-4 mb-4">
-        <select
-          className="text-blue-gray-700 font-sans font-normal text-left outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all border text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200"
-          value={selectedExam}
-          onChange={(e) => handleChangeExam(e.target.value)}
-        >
-          <option key={0} value={""} disabled>
-            Selecione a prova
-          </option>
-
-          {exams.map((e) => (
-            <option key={e.id} value={e.id}>
-              {e.tipo_prova}
-            </option>
-          ))}
-        </select>
-        {levels.length ? (
-          <select
-            className="bg-transparent text-blue-gray-700 font-sans font-normal text-left outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all border text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200"
-            value={selectedLevel}
-            onChange={(e) => handleChangeLevel(e.target.value)}
-          >
-            <option value={undefined} key={0} disabled>
-              Selecione a classificação
-            </option>
-
-            {levels.map((e) => (
-              <option key={e.value} value={e.value}>
-                {e.label}
-              </option>
-            ))}
-          </select>
-        ) : null}
-        {guns.length ? (
-          <select
-            className="bg-transparent text-blue-gray-700 font-sans font-normal text-left outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all border text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200"
-            value={selectedGun}
-            onChange={(e) => handleChangeGun(e.target.value)}
-          >
-            <option value={undefined} key={0} disabled>
-              Selecione o armamento
-            </option>
-
-            {guns.map((e) => (
-              <option key={e.value} value={e.value}>
-                {e.label}
-              </option>
-            ))}
-          </select>
-        ) : null}
-        <button
-          className="bg-green-800 p-2 px-4 rounded-lg text-white"
-          onClick={() => fetchRanking()}
-        >
-          Buscar
-        </button>
-        {/* <Button onClick={() => fetchRanking()}>Buscar</Button> */}
-      </div>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         {ranking.length ? (
           <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
@@ -368,7 +386,7 @@ const Live = () => {
           </table>
         ) : null}
       </div>
-    </>
+    </div>
   );
 };
 
