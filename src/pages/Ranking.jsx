@@ -101,7 +101,7 @@ const Ranking = () => {
     setShowGun(false);
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         orderBy("results.total", "desc"),
@@ -123,7 +123,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -148,7 +148,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("results.level", "==", selectedLevel),
         where("eventId", "==", id),
@@ -164,7 +164,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -189,7 +189,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("results.level", "==", selectedLevel),
         where("eventId", "==", id),
@@ -206,7 +206,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -229,7 +229,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -251,7 +251,7 @@ const Ranking = () => {
     setShowCategory(false);
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results"),
+        collection(db, "exam-results-24"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         orderBy("results.total", "desc")

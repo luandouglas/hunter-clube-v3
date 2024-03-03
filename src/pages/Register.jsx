@@ -102,7 +102,7 @@ const Register = () => {
       userId: result.userId,
     };
     try {
-      const docRef = await addDoc(collection(db, "exam-results"), data);
+      const docRef = await addDoc(collection(db, "exam-results-24"), data);
 
       if (docRef) {
         if (result.gun) {
