@@ -1,10 +1,10 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
-import pistol_dark from "../../assets/pistol_dark.png";
 import pistol from "../../assets/pistol.png";
-import revolver_dark from "../../assets/revolver_dark.png";
+import pistol_dark from "../../assets/pistol_dark.png";
 import revolver from "../../assets/revolver.png";
+import revolver_dark from "../../assets/revolver_dark.png";
 const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState({
     first: [0, 0, 0, 0, 0],
@@ -22,7 +22,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
     const querySnapshot = await getDocs(
       query(
-        collection(db, "levels"),
+        collection(db, "levels-24"),
         where("name", "==", shooter),
         where("examId", "==", examId)
       )

@@ -19,7 +19,7 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
     const querySnapshot = await getDocs(
       query(
-        collection(db, "levels"),
+        collection(db, "levels-24"),
         where("name", "==", shooter),
         where("examId", "==", examId)
       )

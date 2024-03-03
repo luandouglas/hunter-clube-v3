@@ -46,7 +46,7 @@ const Geral = () => {
         setShowGun(true);
         const querySnapshot = await getDocs(
           query(
-            collection(db, "levels"),
+            collection(db, "levels-24"),
             where("examId", "==", selectedExam),
             where("level", "==", selectedLevel),
             where("gun", "==", selectedGun),
@@ -61,7 +61,7 @@ const Geral = () => {
         setCanSee(true);
         const querySnapshot = await getDocs(
           query(
-            collection(db, "levels"),
+            collection(db, "levels-24"),
             where("examId", "==", selectedExam),
             where("level", "==", selectedLevel),
             orderBy("pontuation", "desc")
@@ -77,7 +77,7 @@ const Geral = () => {
       setCanSee(false);
       const querySnapshot = await getDocs(
         query(
-          collection(db, "levels"),
+          collection(db, "levels-24"),
           where("examId", "==", selectedExam),
           orderBy("pontuation", "desc")
         )
