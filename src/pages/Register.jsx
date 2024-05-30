@@ -23,6 +23,7 @@ import SaquePreciso from "../components/SaquePreciso/SaquePreciso";
 import SmallPistol from "../components/SmallPistol/SmallPistol";
 import TrapAmericano from "../components/TrapAmericano/TrapAmericano";
 import { exams } from "../utils";
+import Trap10 from "../components/Trap10/Trap10";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ const Register = () => {
 
   const [selectedUser, setSelectedUser] = React.useState("");
   const [selectedExam, setSelectedExam] = React.useState("");
-  const [step, setStep] = React.useState(0);
+  const [firstStep, setFirstStep] = React.useState(true);
   const { id } = useParams();
 
   const fetchEvent = useCallback(async () => {
@@ -84,6 +85,8 @@ const Register = () => {
         return 6;
       case "qnpGZ7u0IW01TZQ4olPn":
         return 7;
+      case "3ZHw4gpIuBq477OGGrur":
+        return 8
     }
   };
 
@@ -102,13 +105,14 @@ const Register = () => {
       userId: result.userId,
     };
     try {
-      const docRef = await addDoc(collection(db, "exam-results-24"), data);
+      const docRef = await addDoc(collection(db, "exam-results"), data);
 
       if (docRef) {
         if (result.gun) {
           const querySnapshot = await getDocs(
             query(
               collection(db, "levels-24"),
+              where("firstRankingDate", "==", event.date),
               where("examId", "==", result.examId),
               where("name", "==", result.name),
               where("gun", "==", result.gun)
@@ -135,6 +139,7 @@ const Register = () => {
           const querySnapshot = await getDocs(
             query(
               collection(db, "levels-24"),
+              where("firstRankingDate", "==", event.date),
               where("examId", "==", result.examId),
               where("name", "==", result.name)
             )
@@ -153,6 +158,7 @@ const Register = () => {
             await updateDoc(querySnapshot.ref, aux);
           } else {
             let newLevel = createLevel(data);
+            console.log("{newLevel}[158]", newLevel);
             await addDoc(collection(db, "levels-24"), newLevel);
           }
         }
@@ -160,8 +166,8 @@ const Register = () => {
         setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
-          navigate("/events");
-        }, 5000);
+          navigate("/register/w3j0YhJR2zpvKQskWoHD");
+        }, 1000);
       }
     } catch (error) {
       console.log(error);
@@ -192,10 +198,6 @@ const Register = () => {
 
     temp.pontuation = obj.results.total;
     temp.exams = [
-      { date: "2023-04-02", pontuation: 0 },
-      { date: "2023-05-07", pontuation: 0 },
-      { date: "2023-06-03", pontuation: 0 },
-      { date: "2023-06-03", pontuation: 0 },
       { date: event.date, pontuation: obj.results.total },
     ];
     temp.firstRankingDate = event.date;
@@ -219,13 +221,13 @@ const Register = () => {
       </h2>
       <div className="flex items-center my-4">
         <Autocomplete
-          disabled={step > 0}
+          disabled={false}
           onChange={(e) => setSelectedUser(e)}
           value={selectedUser}
           people={users}
         />
       </div>
-      {step == 0 ? (
+      {firstStep ? (
         <>
           <h2 className="text-gray-700  font-semibold text-lg">
             Selecione a prova
@@ -290,9 +292,18 @@ const Register = () => {
         </>
       ) : (
         <>
-          <h2 className="text-gray-700 font-semibold text-md mb-2">
-            {selectedExam}
-          </h2>
+          <div className="flex  flex-row items-center mb-4 gap-4">
+            <button onClick={() => (setFirstStep(true), setSelectedExam(""))}>
+
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+              </svg>
+            </button>
+
+            <label className="block text-gray-700 text-lg font-bold ">
+              {selectedExam}
+            </label>
+          </div>
           {getExamSelected() === 0 && (
             <SaquePreciso
               examId={exams.find((e) => e.tipo_prova == selectedExam).id}
@@ -381,24 +392,29 @@ const Register = () => {
               }}
             />
           )}
+          {getExamSelected() === 8 && (
+            <Trap10
+              examId={exams.find((e) => e.tipo_prova == selectedExam).id}
+              shooter={users.find((e) => e.id === selectedUser).nome}
+              dateEvent={event.date}
+              onSubmitExam={(e) => {
+                setResult({ ...e, userId: selectedUser });
+                setOpen(true);
+              }}
+            />
+          )}
+
         </>
       )}
 
       <div className="text-right">
-        {step === 0 ? (
+        {firstStep && (
           <button
             disabled={selectedExam == "" || selectedUser == ""}
-            onClick={() => setStep((value) => value + 1)}
+            onClick={() => setFirstStep((value) => !value)}
             className="bg-green-800 text-white px-4 py-2 rounded-lg disabled:bg-green-200 disabled:text-gray-300 "
           >
             Avançar
-          </button>
-        ) : (
-          <button
-            onClick={() => setStep(0)}
-            className="bg-green-800 px-4 py-2 rounded-lg text-white"
-          >
-            Voltar
           </button>
         )}
       </div>

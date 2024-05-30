@@ -35,6 +35,7 @@ const Ranking = () => {
     else if (selectedExam == "hej6E1jjnq81xZMGiqEi") fetchTrapAmericano();
     else if (selectedExam == "q00RXisO4sQqOZ8JfqvW") fetchSM22Apoiado();
     else if (selectedExam == "qnpGZ7u0IW01TZQ4olPn") fetchPercursoCaca();
+    else if (selectedExam == "3ZHw4gpIuBq477OGGrur") fetchTrap10();
   };
 
   const fetchEvent = async () => {
@@ -101,7 +102,7 @@ const Ranking = () => {
     setShowGun(false);
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         orderBy("results.total", "desc"),
@@ -123,7 +124,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -139,7 +140,7 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-
+    console.log(data);
     setRanking(removeDuplicateNames(data));
   };
   const fetchPercursoCaca = async () => {
@@ -148,7 +149,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("results.level", "==", selectedLevel),
         where("eventId", "==", id),
@@ -159,12 +160,31 @@ const Ranking = () => {
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
     setRanking(removeDuplicateNames(data));
   };
+
+  const fetchTrap10 = async () => {
+    setShowCategory(true);
+    setShowGun(false);
+
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, "exam-results"),
+        where("examId", "==", selectedExam),
+        where("results.level", "==", selectedLevel),
+        where("eventId", "==", id),
+        orderBy("results.total", "desc")
+      )
+    );
+    const data = [];
+    querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
+    setRanking(removeDuplicateNames(data));
+  };
+
   const fetchSaquePreciso = async () => {
     setShowGun(true);
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -189,7 +209,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("results.level", "==", selectedLevel),
         where("eventId", "==", id),
@@ -206,7 +226,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -229,7 +249,7 @@ const Ranking = () => {
 
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         where("results.level", "==", selectedLevel),
@@ -251,7 +271,7 @@ const Ranking = () => {
     setShowCategory(false);
     const querySnapshot = await getDocs(
       query(
-        collection(db, "exam-results-24"),
+        collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
         orderBy("results.total", "desc")

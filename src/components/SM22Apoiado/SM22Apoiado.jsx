@@ -1,72 +1,66 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 
 const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
-  const [values, setValues] = React.useState({
-    first: [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ],
-    second: [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ],
-    third: [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ],
-    fourth: [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ],
-    fifth: [
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-      false,
-    ],
+  const [scores, setScores] = useState({
+    first: Array(10).fill(false), // Array de 10 disparos para cada sequência
+    second: Array(10).fill(false),
+    third: Array(10).fill(false),
+    fourth: Array(10).fill(false),
+    fifth: Array(10).fill(false)
   });
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [classification, setClassification] = useState('');
+  const [repeatedCounts, setRepeatedCounts] = useState({});
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
+  const [level, setLevel] = useState(null);
 
-  const [level, setLevel] = React.useState();
+  const handleInputChange = (e, seqIndex, shotIndex) => {
+    const { type, checked } = e.target;
+    const newScores = { ...scores };
+    newScores[seqIndex][shotIndex] = type === 'checkbox' ? checked : parseInt(value);
+    setScores(newScores);
+    setIsSubmitDisabled(true); // Desabilita o botão de submissão quando a pontuação é alterada
+  };
+
+  const calculateTotalPoints = () => {
+    const flatScores = scores.first.concat(scores.second, scores.third, scores.fourth, scores.fifth);
+
+    // Calcula a pontuação total
+    const total = flatScores.reduce((sum, score, index) => {
+      if (score === true) {
+        if (index >= scores.first.length + scores.second.length + scores.third.length + scores.fourth.length) {
+          return sum + 0.1; // Cada galinha derrubada à 100 metros soma 0,1 ponto
+        }
+        return sum + 1; // Cada acerto em porcos, perus, carneiros e galinhas soma 1 ponto
+      }
+      return sum;
+    }, 0);
+
+    setTotalPoints(Number(total).toFixed(1));
+    setClassification(getClassification(total));
+
+    // Contagem de ocorrências de cada valor
+    const countOccurrences = flatScores.reduce((acc, score) => {
+      const key = score === true ? 'true' : String(score);
+      acc[key] = (acc[key] || 0) + 1;
+      return acc;
+    }, {});
+    delete countOccurrences.false;
+    setRepeatedCounts(countOccurrences);
+
+    setIsSubmitDisabled(false); // Habilita o botão de submissão após calcular a pontuação total
+  };
+
+  const getClassification = (total) => {
+    if (total <= 27) {
+      return 'beginner';
+    } else {
+      return 'master';
+    }
+  };
+
   const fetchLevel = useCallback(async () => {
     if (!shooter || !examId) {
       return;
@@ -83,58 +77,7 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     if (data.length > 0) {
       setLevel(data[0]);
     }
-  }, []);
-
-  useEffect(() => {
-    fetchLevel();
-    // fetchLevel();
-  }, [shooter, fetchLevel]);
-
-  const sumRow = (ind) => {
-    const row = values[ind];
-    const filteredRow = row.filter((num) => num !== null && num !== undefined);
-    const sum = filteredRow.reduce((acc, num) => acc + num, 0);
-
-    return sum;
-  };
-
-  const countPoints = (points) => {
-    let result = {};
-    Object.values(points).forEach(function (array) {
-      array.forEach(function (numero) {
-        result[numero] = (result[numero] || 0) + 1;
-      });
-    });
-
-    for (var i = 0; i <= 12; i++) {
-      result[i] = result[i] || 0;
-    }
-    return result;
-  };
-
-  const sumValues = () => {
-    let sum = 0;
-    for (let i = 0; i < values.first.length; i++) {
-      sum +=
-        (values.first[i] || 0) +
-        (values.second[i] || 0) +
-        (values.third[i] || 0) +
-        (values.fourth[i] || 0);
-    }
-    return sum + sumRow("fifth") / 10;
-  };
-
-  const handleCheckedChange = (individual, index, newValue) => {
-    setValues((prevValues) => {
-      const updatedValues = { ...prevValues };
-      updatedValues[individual] = [
-        ...prevValues[individual].slice(0, index),
-        newValue,
-        ...prevValues[individual].slice(index + 1),
-      ];
-      return updatedValues;
-    });
-  };
+  }, [shooter, examId]);
 
   const checkLevel = (object, newDate) => {
     if (object && object.level && object.firstRankingDate !== newDate) {
@@ -147,13 +90,13 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     if (checkLevel(object, newDate)) {
       return object.level;
     } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 37) {
+      if (object.pontuation <= 27) {
         return "beginner";
       } else {
         return "master";
       }
     } else {
-      if (sumValues() <= 37) {
+      if (totalPoints <= 27) {
         return "beginner";
       } else {
         return "master";
@@ -161,153 +104,84 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
   };
 
+  useEffect(() => {
+    fetchLevel();
+  }, [shooter, fetchLevel]);
+
   const onSubmit = () => {
+    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
+
     onSubmitExam({
-      points: values,
-      pointsCounter: countPoints(values),
-      total: sumValues(),
-      level: adjustLevel(level, dateEvent),
+      points: scores,
+      pointsCounter: repeatedCounts,
+      total: totalPoints,
+      level: userLevel,
       examId,
       name: shooter,
     });
   };
 
-  React.useEffect(() => {
-    if (sumValues() < 40) {
-      setValues((prevValues) => ({
-        ...prevValues,
-        fifth: new Array(10).fill(false),
-      }));
-    }
-  }, [sumValues()]);
 
-  const getAttr = (key) => {
-    switch (key) {
-      case 1:
-        return "first";
-      case 2:
-        return "second";
-      case 3:
-        return "third";
-      case 4:
-        return "fourth";
-      case 5:
-        return "fifth";
-    }
-  };
 
   return (
-    <>
-      <div className="flex flex-row items-center">
-        <div>
-          {[1, 2, 3, 4].map((e) => (
-            <div key={e}>
-              <div className="flex flex-row items-center">
-                <span className="w-24">{e}ª Serie</span>
-                <div>
-                  {e === 1 && (
-                    <div className="w-16 h-[42px] px-2 flex justify-center items-center border border-gray-400">
-                      Galinha
-                    </div>
-                  )}
-                  {e === 2 && (
-                    <div className="w-16 h-[42px] px-2 flex justify-center items-center border border-gray-400">
-                      Porco
-                    </div>
-                  )}
-                  {e === 3 && (
-                    <div className="w-16 h-[42px] px-2 flex justify-center items-center border border-gray-400">
-                      Peru
-                    </div>
-                  )}
-                  {e === 4 && (
-                    <div className="w-16 h-[42px] px-2 flex justify-center items-center border border-gray-400">
-                      Bode
-                    </div>
-                  )}
-                </div>
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((j) => (
-                  <div
-                    className="border border-gray-400 w-14 h-[42px] flex justify-center items-center"
-                    key={j}
-                  >
-                    <input
-                      className="focus:outline-none focus:border-gray-600 focus:shadow-none "
-                      type="checkbox"
-                      value={values[getAttr(e)][j - 1] || ""}
-                      onChange={(event) =>
-                        handleCheckedChange(
-                          getAttr(e),
-                          j - 1,
-                          event.target.checked
-                        )
-                      }
-                    />
-                  </div>
-                ))}
-                <input
-                  disabled
-                  value={sumRow(getAttr(e))}
-                  className="border w-20 focus:outline-none border-gray-400 focus:border-gray-700 focus:shadow-none"
-                  type="number"
-                />
-              </div>
-            </div>
-          ))}
-          {sumValues() >= 40 ? (
-            <div className="flex flex-row items-center">
-              <span className="w-24">5ª Serie</span>
-              <div className="w-16 h-[42px] px-2 flex justify-center items-center border border-gray-400">
-                Bode
-              </div>
+    <div className="min-h-[460px] p-4 bg-gray-100">
+      <div className="max-w-lg mx-auto bg-white p-6  shadow-md">
 
-              <div className="flex flex-row items-center">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((j) => (
-                  <div
-                    className="border border-gray-400 w-14 h-[42px] flex justify-center items-center"
-                    key={j}
-                  >
-                    <input
-                      className="focus:outline-none focus:border-gray-600 focus:shadow-none "
-                      type="checkbox"
-                      value={values[getAttr(5)][j - 1] || ""}
-                      onChange={(event) =>
-                        handleCheckedChange(
-                          getAttr(5),
-                          j - 1,
-                          event.target.checked
-                        )
-                      }
-                    />
-                  </div>
-                ))}
-                <input
-                  disabled
-                  value={sumRow(getAttr(5)) / 10}
-                  className="border w-20 focus:outline-none border-gray-400 focus:border-gray-700 focus:shadow-none"
-                  type="number"
-                />
-              </div>
+        {['first', 'second', 'third', 'fourth', 'fifth'].map((sequence, seqIndex) => (
+          <div key={seqIndex} className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">
+              {sequence === 'first' && 'Silhueta Porcos 50 metros'}
+              {sequence === 'second' && 'Silhueta Peru 75 metros'}
+              {sequence === 'third' && 'Silhueta Carneiro 100 metros'}
+              {sequence === 'fourth' && 'Silhueta Galinha 100 metros'}
+              {sequence === 'fifth' && 'Silhueta Galinha 100 metros'}
+            </h3>
+            <div className="grid grid-cols-5 gap-2">
+              {scores[sequence].map((shot, shotIndex) => (
+                <React.Fragment key={shotIndex}>
+                  {(shotIndex % 10 === 0 && shotIndex !== 0) && <p>Próxima sequência de disparos</p>}
+                  <input
+                    type="checkbox"
+                    checked={shot}
+                    disabled={sequence === "fifth" && totalPoints < 30}
+                    onChange={(e) => handleInputChange(e, sequence, shotIndex)}
+                    className="h-5 p-2 border border-gray-300"
+                  />
+                </React.Fragment>
+              ))}
             </div>
-          ) : null}
-          <input
-            disabled
-            value={sumValues()}
-            className="float-right border w-20 focus:outline-none border-gray-400 focus:border-gray-700 focus:shadow-none"
-            type="number"
-          />
+          </div>
+        ))}
+
+        <button
+          onClick={calculateTotalPoints}
+          className="w-full bg-gray-800 text-white p-2  hover:bg-gray-700 transition duration-200 mb-2"
+        >
+          Calcular Pontuação Total
+        </button>
+
+        {totalPoints > 0 && (
+          <>
+            <div className="mt-4 p-4 border border-gray-300 ">
+              <p><strong>Pontuação Total:</strong> {totalPoints}</p>
+            </div>
+          </>
+        )}
+
+        <div className="flex flex-row items-center gap-2 mt-4">
+          <button
+            onClick={onSubmit}
+            className={`w-full h-10 ${isSubmitDisabled ? 'bg-gray-400' : 'bg-gray-800'} text-white  hover:bg-gray-700 transition duration-200`}
+            disabled={isSubmitDisabled}
+          >
+            Submeter
+          </button>
+          <button className="w-full h-10 bg-gray-600 text-white  hover:bg-gray-500 transition duration-200">
+            Ver Rank
+          </button>
         </div>
       </div>
-
-      <div className="text-right mb-4">
-        <button
-          onClick={() => onSubmit()}
-          className="bg-blue-gray-500 px-4 py-2 rounded-lg text-white disabled:bg-blue-gray-200 disabled:text-gray-600"
-        >
-          Salvar resultado
-        </button>
-      </div>
-    </>
+    </div>
   );
 };
 

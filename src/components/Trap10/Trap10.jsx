@@ -2,7 +2,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 
-const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
+const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState();
 
   const [gun, setGun] = React.useState("");
@@ -28,9 +28,7 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   useEffect(() => {
     fetchLevel();
-    // fetchLevel();
   }, [shooter, fetchLevel]);
-
 
   const handleValueChange = (newValue, maxValue) => {
 
@@ -58,11 +56,30 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     return false;
   };
 
+  const adjustLevel = (object, newDate) => {
+    if (checkLevel(object, newDate)) {
+      return object.level;
+    } else if (object && object.level && object.firstRankingDate === newDate) {
+      if (object.pontuation <= 8) {
+        return "beginner";
+      } else {
+        return "master";
+      }
+    } else {
+      if (values <= 8) {
+        return "beginner";
+      } else {
+        return "master";
+      }
+    }
+  };
+
   const onSubmit = () => {
     onSubmitExam({
       points: values,
-      pointsCounter: countPoints(values),
-      total: sumValues(),
+      total: values,
+      level: adjustLevel(level, dateEvent),
+      pointsCounter: {},
       examId,
       name: shooter,
     });
@@ -76,7 +93,7 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
             <input
               type="text"
               value={values}
-              onChange={e => handleValueChange(e.target.value, 25)}
+              onChange={e => handleValueChange(e.target.value, 10)}
               placeholder="Digite aqui sua nota"
               className="flex-grow h-10 p-2 border outline-none border-gray-300 focus:outline-none"
             />
@@ -93,4 +110,4 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   );
 };
 
-export default TrapAmericano;
+export default Trap10;

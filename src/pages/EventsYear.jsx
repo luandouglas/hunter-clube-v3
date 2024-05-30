@@ -2,25 +2,30 @@ import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect, useState, Fragment } from "react";
 import { db } from "../../firebaseConfig";
 import Layout from "../components/Layout";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Button, Dialog, Tooltip } from "@material-tailwind/react";
 
 const Events = () => {
   const [events, setEvents] = useState([]);
   const [statusDialog, setStatusDialog] = useState(false);
   const [form, setForm] = useState({ name: "", date: "", status: "" });
-  const [year, setYear] = useState(false);
 
+  const { year } = useParams()
   const fetchEvents = useCallback(async () => {
     const querySnapshot = await getDocs(
       query(collection(db, "events"), orderBy("date", "desc"))
     );
+    const desiredYear = Number(year);
     const aux = [];
     querySnapshot.docs.forEach((e) => {
-      aux.push({ ...e.data(), id: e.id });
+      const data = e.data();
+      const eventDate = new Date(data.date);
+      if (eventDate.getFullYear() === desiredYear) {
+        aux.push({ ...data, id: e.id });
+      }
     });
     setEvents(aux);
-  }, []);
+  }, [year]);
 
   useEffect(() => {
     fetchEvents();
@@ -31,6 +36,12 @@ const Events = () => {
     setYear(year)
   }
 
+  const getMonthName = (dateStr, locale = 'pt-BR') => {
+    const date = new Date(dateStr);
+    const monthName = date.toLocaleString(locale, { month: "long" });
+    return monthName.charAt(0).toUpperCase() + monthName.slice(1);
+
+  }
   const handleSaveEvent = () => {
     console.log({ ...form, status: "Em andamento" })
   }
@@ -149,69 +160,43 @@ const Events = () => {
           </thead>
           <tbody>
 
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <td scope="row"
-                className="px-3 py-4 font-medium whitespace-nowrap ">
-                <span className="text-gray-900 hover:text-white bg-transparent hover:bg-green-800 p-3 rounded-lg">Clube Hunter - 2024</span>
-              </td>
-              <td scope="row"
-                className="pl-4 py-4 font-medium whitespace-nowrap ">
-                <div className="flex flex-row items-center gap-x-4">
-                  <Tooltip content="Criar novo evento">
-                    <button onClick={() => handleCreateNewEvent("2024")} className="bg-green-800 p-2 rounded-md">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                      </svg>
-                    </button>
-                  </Tooltip>
-                  <td>
-                    <Tooltip content="Visualizar eventos">
-                      <Link to={`/events/2024`}>
+            {events.map(e =>
+              <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <td scope="row"
+                  className="px-3 py-4 font-medium whitespace-nowrap ">
+                  <span className="text-gray-900 hover:text-white bg-transparent hover:bg-green-800 p-3 rounded-lg">Clube Hunter - {getMonthName(e.date)}</span>
+                </td>
+                <td scope="row"
+                  className="pl-4 py-4 font-medium whitespace-nowrap ">
+                  <div className="flex flex-row items-center gap-x-4">
+                    <Tooltip content="Cadastrar resultado">
+                      <Link to={`/register/${e.id}`}>
 
-                        <button className="bg-blue-800 p-2 rounded-md">
-
+                        <button className="bg-green-800 p-2 rounded-md">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                           </svg>
                         </button>
                       </Link>
                     </Tooltip>
-                  </td>
-                </div>
-              </td>
-            </tr>
-            <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-              <td scope="row"
-                className="px-3 py-4 font-medium whitespace-nowrap ">
-                <span className="text-gray-900 hover:text-white bg-transparent hover:bg-green-800 p-3 rounded-lg">Clube Hunter - 2023</span>
-              </td>
-              <td scope="row"
-                className="pl-4 py-4 font-medium whitespace-nowrap ">
-                <div className="flex flex-row items-center gap-x-4">
-                  <Tooltip content="Registrar prova">
+                    <td>
+                      <Tooltip content="Visualizar eventos">
+                        <Link to={`/ranking/${e.id}`}>
 
-                    <button disabled onClick={() => handleCreateNewEvent("2023")} className="bg-green-800 p-2 rounded-md disabled:bg-green-100">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                      </svg>
-                    </button>
-                  </Tooltip>
-                  <td>
-                    <Tooltip content="Visualizar eventos">
-                      <Link to={`/events/2023`}>
-                        <button className="bg-blue-800 p-2 rounded-md">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-                          </svg>
-                        </button>
-                      </Link>
-                    </Tooltip>
-                  </td>
-                </div>
-              </td>
-            </tr>
+                          <button className="bg-blue-800 p-2 rounded-md">
+
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                          </button>
+                        </Link>
+                      </Tooltip>
+                    </td>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

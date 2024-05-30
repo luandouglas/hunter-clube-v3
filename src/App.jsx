@@ -8,6 +8,7 @@ import {
 
 import Edit from "./pages/Edit";
 import Events from "./pages/Events";
+import EventsYear from "./pages/EventsYear";
 import Geral from "./pages/Geral";
 import Home from "./pages/Home";
 import Live from "./pages/Live";
@@ -24,6 +25,7 @@ const router = createHashRouter(
       <Route path="/geral" element={<Geral />} />
       <Route path="/live" element={<Live />} />
       <Route path="events" element={<Events />} />
+      <Route path="events/:year" element={<EventsYear />} />
       <Route path="register/:id" element={<Register />} />
       <Route path="register/:eventId/edit/:id" element={<Edit />} />
       <Route path="ranking/:id" element={<Ranking />} />

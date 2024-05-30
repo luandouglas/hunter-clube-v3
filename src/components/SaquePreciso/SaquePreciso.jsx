@@ -1,17 +1,18 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
-import pistol from "../../assets/pistol.png";
-import pistol_dark from "../../assets/pistol_dark.png";
-import revolver from "../../assets/revolver.png";
-import revolver_dark from "../../assets/revolver_dark.png";
 const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
-  const [values, setValues] = React.useState({
-    first: [0, 0, 0, 0, 0],
-    second: [0, 0, 0, 0, 0],
-    third: [0, 0, 0, 0, 0],
-    fourth: [0, 0, 0, 0, 0],
+  const [gunType, setGunType] = useState('pistol');
+  const [scores, setScores] = useState({
+    first: Array(3).fill(0),
+    second: Array(3).fill(0),
+    third: Array(3).fill(0),
+    fourth: Array(3).fill(0)
   });
+  const [repeatedCounts, setRepeatedCounts] = useState({});
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [classification, setClassification] = useState('');
+  const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
   const [gun, setGun] = React.useState("");
 
@@ -38,54 +39,6 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     fetchLevel();
   }, [shooter, fetchLevel]);
 
-  const sumRow = (ind) => {
-    const row = values[ind];
-    const filteredRow = row.filter((num) => num !== null && num !== undefined);
-    const sum = filteredRow.reduce((acc, num) => acc + num, 0);
-
-    return sum;
-  };
-
-  const countPoints = (points) => {
-    let result = {};
-    Object.values(points).forEach(function (array) {
-      array.forEach(function (numero) {
-        result[numero] = (result[numero] || 0) + 1;
-      });
-    });
-
-    for (var i = 0; i <= 12; i++) {
-      result[i] = result[i] || 0;
-    }
-    return result;
-  };
-
-  const sumValues = () => {
-    let sum = 0;
-    for (let i = 0; i < values.first.length; i++) {
-      sum +=
-        (values.first[i] || 0) +
-        (values.second[i] || 0) +
-        (values.third[i] || 0) +
-        (values.fourth[i] || 0);
-    }
-    return sum;
-  };
-
-  const handleValueChange = (individual, index, newValue, maxValue) => {
-    const value = Number(newValue);
-    if (!(!isNaN(value) && value >= 0 && value <= maxValue)) return;
-
-    setValues((prevValues) => {
-      const updatedValues = { ...prevValues };
-      updatedValues[individual] = [
-        ...prevValues[individual].slice(0, index),
-        value,
-        ...prevValues[individual].slice(index + 1),
-      ];
-      return updatedValues;
-    });
-  };
   const checkLevel = (object, newDate) => {
     if (object && object.level && object.firstRankingDate !== newDate) {
       return true;
@@ -97,13 +50,13 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     if (checkLevel(object, newDate)) {
       return object.level;
     } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 180) {
+      if (object.pontuation <= 105) {
         return "beginner";
       } else {
         return "master";
       }
     } else {
-      if (sumValues() <= 180) {
+      if (totalPoints <= 105) {
         return "beginner";
       } else {
         return "master";
@@ -111,119 +64,129 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
   };
 
+  const handleInputChange = (e, series, index, maxValue = 12) => {
+    const value = parseInt(e.target.value);
+    const newValue = isNaN(value) ? 0 : Math.min(value, maxValue); // Se não for um número, definir como 0. Se for maior que maxValue, definir como maxValue
+    const newScores = { ...scores };
+    newScores[series][index] = newValue;
+    setScores(newScores);
+    setIsSubmitDisabled(true); // Disable submit button when score is changed
+  };
+
   const onSubmit = () => {
+    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
+
     onSubmitExam({
-      points: values,
-      pointsCounter: countPoints(values),
-      total: sumValues(),
-      level: adjustLevel(level, dateEvent),
-      gun,
+      points: scores,
+      pointsCounter: repeatedCounts,
+      total: totalPoints,
+      level: userLevel,
+      gun: gunType,
       examId,
       name: shooter,
     });
   };
 
-  const getAttr = (key) => {
-    switch (key) {
-      case 1:
-        return "first";
-      case 2:
-        return "second";
-      case 3:
-        return "third";
-      case 4:
-        return "fourth";
+  const calculateTotalPoints = () => {
+    const flatScores = scores.first.concat(scores.second, scores.third, scores.fourth);
+
+    const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
+    setTotalPoints(total);
+    setClassification(getClassification(total));
+
+    setRepeatedCounts(countPoints(scores));
+
+    setIsSubmitDisabled(false); // Enable submit button after calculating total points
+  };
+
+  const countPoints = (points) => {
+    const result = {};
+
+    for (let serie in points) {
+      for (let shot of points[serie]) {
+        result[shot] = (result[shot] || 0) + 1;
+      }
+    }
+
+    for (let i = 0; i <= 12; i++) {
+      if (!result[i]) {
+        result[i] = 0;
+      }
+    }
+
+    return result;
+  };
+
+  const getClassification = (total) => {
+    if (total <= 105) {
+      return 'beginner';
+    } else {
+      return 'master';
     }
   };
 
   return (
-    <>
-      <div className="flex flex-row items-center">
-        <div>
-          {[1, 2, 3, 4].map((e) => (
-            <div key={e}>
-              <div className="flex flex-row items-center">
-                <span className="w-24">{e}ª Serie</span>
-                {[1, 2, 3, 4, 5].map((j) => (
-                  <input
-                    key={j}
-                    className="border w-20 focus:outline-none focus:border-gray-700 focus:shadow-none"
-                    type="number"
-                    value={values[getAttr(e)][j - 1] || ""}
-                    onChange={(event) =>
-                      handleValueChange(
-                        getAttr(e),
-                        j - 1,
-                        event.target.value,
-                        e > 2 ? 12 : 10
-                      )
-                    }
-                  />
-                ))}
+    <div className="min-h-screen p-4 bg-gray-100">
+      <div className="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md">
+        <div className="mb-4">
+          <label className="block text-lg font-semibold mb-2">Escolha a arma:</label>
+          <select
+            value={gunType}
+            onChange={(e) => setGunType(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+            <option value="pistol">Pistola</option>
+            <option value="revolver">Revólver</option>
+          </select>
+        </div>
+        {['first', 'second', 'third', 'fourth'].map((series, seriesIndex) => (
+          <div key={seriesIndex} className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">
+              {series === 'first' && '1ª Série: 05 metros'}
+              {series === 'second' && '2ª Série: 10 metros'}
+              {series === 'third' && '3ª Série: 15 metros'}
+              {series === 'fourth' && '4ª Série: 20 metros'}
+            </h3>
+            <div className="grid grid-cols-3 gap-2">
+              {scores[series].map((shot, shotIndex) => (
                 <input
-                  disabled
-                  value={sumRow(getAttr(e))}
-                  className="border w-20 focus:outline-none focus:border-gray-700 focus:shadow-none"
+                  key={shotIndex}
                   type="number"
+                  min="0"
+                  max="12"
+                  value={shot}
+                  onChange={(e) => handleInputChange(e, series, shotIndex, ['first', 'second'].includes(series) ? 10 : 12)}
+                  className="h-10 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
-              </div>
+              ))}
             </div>
-          ))}
-          <input
-            disabled
-            value={sumValues()}
-            className="float-right border w-20 focus:outline-none focus:border-gray-700 focus:shadow-none"
-            type="number"
-          />
-        </div>
-        <div className="flex flex-col pl-4 space-y-2">
-          <div
-            onClick={() => setGun("pistol")}
-            className={
-              " flex flex-col items-center cursor-pointer rounded-lg px-1 " +
-              (gun === "pistol"
-                ? "bg-green-800 text-white"
-                : "bg-transparent text-green-800")
-            }
-          >
-            <span>Pistola</span>
-            <img
-              src={gun === "pistol" ? pistol_dark : pistol}
-              alt="pistol"
-              height={60}
-              width={60}
-            />
           </div>
-          <div
-            onClick={() => setGun("revolver")}
-            className={
-              " flex flex-col items-center cursor-pointer rounded-lg px-1 " +
-              (gun === "revolver"
-                ? "bg-green-800 text-white"
-                : "bg-transparent text-green-800")
-            }
-          >
-            <span>Revolver</span>
-
-            <img
-              src={gun === "revolver" ? revolver_dark : revolver}
-              alt="revolver"
-              height={60}
-              width={60}
-            />
-          </div>
-        </div>
-      </div>
-      <div className="text-right mb-4">
+        ))}
         <button
-          disabled={!gun}
-          onClick={() => onSubmit()}
-          className="bg-green-800 px-4 py-2 rounded-lg text-white disabled:bg-blue-gray-200 disabled:text-gray-600"
+          onClick={calculateTotalPoints}
+          className="w-full bg-gray-800 text-white p-2 rounded-md hover:bg-gray-700 transition duration-200 mb-2"
         >
-          Salvar resultado
+          Calcular Pontuação Total
         </button>
+        {totalPoints > 0 && (
+          <div className="mt-4 p-4 border border-gray-300 rounded-md">
+            <p><strong>Pontuação Total:</strong> {totalPoints}</p>
+          </div>
+        )}
+        <div className="flex flex-row items-center gap-2 mt-4">
+          <button
+            onClick={onSubmit}
+            className={`w-full h-10 ${isSubmitDisabled ? 'bg-gray-400' : 'bg-gray-800'} text-white hover:bg-gray-700 transition duration-200`}
+            disabled={isSubmitDisabled}
+          >
+            Submeter
+          </button>
+          <button className="w-full h-10 bg-gray-600 text-white hover:bg-gray-500 transition duration-200">
+            Ver Rank
+          </button>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

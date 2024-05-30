@@ -66,7 +66,7 @@ const Register = () => {
       if (eventId) {
 
         const examResultSnapshot = await query(
-          getDocs(collection(db, "exam-results-24")),
+          getDocs(collection(db, "exam-results")),
           where('eventId', '==', eventId)
         )
         console.log(examResultSnapshot);
@@ -125,7 +125,7 @@ const Register = () => {
       userId: result.userId,
     };
     try {
-      const docRef = await addDoc(collection(db, "exam-results-24"), data);
+      const docRef = await addDoc(collection(db, "exam-results"), data);
 
       if (docRef) {
         if (result.gun) {
