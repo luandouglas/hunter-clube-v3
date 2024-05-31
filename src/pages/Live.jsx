@@ -22,17 +22,6 @@ const Live = () => {
   const [canSee, setCanSee] = useState(true);
   const [showGun, setShowGun] = useState(true);
 
-  const [dates, setDates] = useState([
-    { pontuation: 0, date: '2023-04-02' },
-    { pontuation: 0, date: '2023-05-07' },
-    { pontuation: 0, date: '2023-06-03' },
-    { pontuation: 0, date: '2023-07-09' },
-    { pontuation: 0, date: '2023-08-06' },
-    { pontuation: 0, date: '2023-09-10' },
-    { pontuation: 0, date: '2023-10-08' },
-    { pontuation: 0, date: '2023-11-05' },
-  ]);
-
   const [label, setLabel] = useState('')
 
   useEffect(() => {
@@ -116,12 +105,22 @@ const Live = () => {
           current++;
           break;
         case 16:
+          setLabel("Trap 10 - Iniciante")
+          fetchRanking("3ZHw4gpIuBq477OGGrur", "", "beginner")
+          current++;
+          break;
+        case 17:
+          setLabel("Trap 10 - Master")
+          fetchRanking("3ZHw4gpIuBq477OGGrur", "", "beginner")
+          current++;
+          break;
+        case 18:
           setLabel("Silhueta Metálica Apoiado - Master")
           fetchRanking("q00RXisO4sQqOZ8JfqvW", "", "master")
           current = 1;
           break;
       }
-    }, 15000);
+    }, 10000);
   }, [])
 
   const fetchRanking = async (exam, gun, level) => {
@@ -135,7 +134,7 @@ const Live = () => {
         setShowGun(true);
         const querySnapshot = await getDocs(
           query(
-            collection(db, "levels"),
+            collection(db, "levels-24"),
             where("examId", "==", exam),
             where("level", "==", level),
             where("gun", "==", gun),
@@ -150,7 +149,7 @@ const Live = () => {
         setCanSee(true);
         const querySnapshot = await getDocs(
           query(
-            collection(db, "levels"),
+            collection(db, "levels-24"),
             where("examId", "==", exam),
             where("level", "==", level),
             orderBy("pontuation", "desc")
@@ -166,7 +165,7 @@ const Live = () => {
       setCanSee(false);
       const querySnapshot = await getDocs(
         query(
-          collection(db, "levels"),
+          collection(db, "levels-24"),
           where("examId", "==", exam),
           orderBy("pontuation", "desc")
         )
@@ -206,8 +205,7 @@ const Live = () => {
 
   const trataResultado = (a) => {
     return a
-      .map(e => ({ ...e, exams: e.exams.filter(j => j.pontuation > 0) }))
-      .filter(e => e.exams.length >= 5);
+      .map(e => ({ ...e, exams: e.exams.filter(j => j.pontuation > 0) }));
   }
 
   const pegaOs8 = a => {
@@ -241,15 +239,8 @@ const Live = () => {
   const normalizeArray = (inputArray) => {
     // Lista de datas desejadas
     const desiredDates = [
-      '2023-04-02',
-      '2023-05-07',
-      '2023-06-03',
-      '2023-07-09',
-      '2023-08-06',
-      '2023-09-10',
-      '2023-10-08',
-      '2023-11-05',
-      '2023-12-02'
+      '2024-03-03',
+      '2024-04-07',
     ];
 
     // Crie um objeto para armazenar os valores do array normalizado
@@ -277,8 +268,6 @@ const Live = () => {
     return normalizedArray;
   }
 
-
-
   return (
     <div className="p-6">
       <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking Final</h1>
@@ -299,31 +288,13 @@ const Live = () => {
                   Pontuação
                 </th>
                 <th scope="col" className="px-6 py-3 text-center">
-                  Abr
+                  Mar
                 </th>
                 <th scope="col" className="px-6 py-3 text-center">
-                  Mai
+                  Abr
                 </th>
                 <th colSpan={2} scope="col" className="px-6 py-3 text-center">
-                  Jun
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Jul
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Ago
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Set
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Out
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Nov
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Dez
+                  Mai
                 </th>
               </tr>
             </thead>
@@ -344,7 +315,7 @@ const Live = () => {
                   {normalizeArray(el.exams).map((e, j) =>
                     <td
                       key={j}
-                      className={`text-gray-900 px-6 py-4 text-center ${e.destaque && 'bg-blue-gray-300'}`}
+                      className={`text-gray-900 px-6 py-4 text-center`}
                     >
                       {e.pontuation}
                     </td>

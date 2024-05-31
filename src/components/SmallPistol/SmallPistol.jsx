@@ -30,6 +30,7 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
+    console.log(shooter);
     if (data.length > 0) {
       setLevel(data[0]);
       console.log("LEVEL", data[0].level)

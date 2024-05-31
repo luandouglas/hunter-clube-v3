@@ -23,7 +23,7 @@ const router = createHashRouter(
       <Route path="/" element={<Home />} />
       <Route path="/home" element={<Home />} />
       <Route path="/geral" element={<Geral />} />
-      <Route path="/live" element={<Live />} />
+      <Route path="/live/:eventId" element={<Live />} />
       <Route path="events" element={<Events />} />
       <Route path="events/:year" element={<EventsYear />} />
       <Route path="register/:id" element={<Register />} />
