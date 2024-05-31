@@ -24,7 +24,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const querySnapshot = await getDocs(
       query(
         collection(db, "levels-24"),
-        where("name", "==", shooter),
+        where("name", "==", shooter.trimEnd()),
         where("examId", "==", examId)
       )
     );
@@ -32,7 +32,10 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
+      console.log(data[0].level);
+      setClassification(data[0].level)
     }
+    console.log(querySnapshot.docs.map(e => e.data()));
   }, []);
 
   useEffect(() => {

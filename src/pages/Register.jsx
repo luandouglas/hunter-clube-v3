@@ -104,6 +104,7 @@ const Register = () => {
       },
       userId: result.userId,
     };
+    console.log("OBJECT", data)
     try {
       const docRef = await addDoc(collection(db, "exam-results"), data);
 
@@ -112,7 +113,6 @@ const Register = () => {
           const querySnapshot = await getDocs(
             query(
               collection(db, "levels-24"),
-              where("firstRankingDate", "==", event.date),
               where("examId", "==", result.examId),
               where("name", "==", result.name),
               where("gun", "==", result.gun)
@@ -133,6 +133,7 @@ const Register = () => {
             await updateDoc(querySnapshot.ref, aux);
           } else {
             let newLevel = createLevel(data);
+
             await addDoc(collection(db, "levels-24"), newLevel);
           }
         } else {
@@ -158,7 +159,7 @@ const Register = () => {
             await updateDoc(querySnapshot.ref, aux);
           } else {
             let newLevel = createLevel(data);
-            console.log("{newLevel}[158]", newLevel);
+
             await addDoc(collection(db, "levels-24"), newLevel);
           }
         }
@@ -166,30 +167,27 @@ const Register = () => {
         setShowToast(true);
         setTimeout(() => {
           setShowToast(false);
-          navigate("/register/w3j0YhJR2zpvKQskWoHD");
         }, 1000);
       }
     } catch (error) {
-      console.log(error);
+
     }
     setOpen(false);
   };
   const addOrUpdateExam = (obj, newExam, date) => {
     const { exams } = obj;
-
     const existingExam = exams.find((exam) => exam.date === date);
     if (existingExam) {
-      if (newExam.results.total > existingExam.pontuation) {
+      if (existingExam.pontuation < newExam.results.total) {
         existingExam.pontuation = newExam.results.total;
       }
     } else {
       exams.push({ date: date, pontuation: newExam.results.total });
     }
-    if (obj.results?.level) {
+    if (newExam.results?.level) {
       obj.level = newExam.results.level;
     }
-    obj.pontuation = obj.exams.reduce((acc, exam) => acc + exam.pontuation, 0);
-
+    obj.pontuation = exams.reduce((acc, exam) => acc + exam.pontuation, 0);
     return obj;
   };
 

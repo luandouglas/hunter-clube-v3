@@ -98,13 +98,14 @@ const Ranking = () => {
     }
   };
   const fetchCarabina22MiraAberta = async () => {
-    setShowCategory(false);
+    setShowCategory(true);
     setShowGun(false);
     const querySnapshot = await getDocs(
       query(
         collection(db, "exam-results"),
         where("examId", "==", selectedExam),
         where("eventId", "==", id),
+        where("results.level", "==", selectedLevel),
         orderBy("results.total", "desc"),
         orderBy("results.pointsCounter.12", "desc"),
         orderBy("results.pointsCounter.10", "desc"),

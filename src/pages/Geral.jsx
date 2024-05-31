@@ -23,17 +23,6 @@ const Geral = () => {
   const [canSee, setCanSee] = useState(true);
   const [showGun, setShowGun] = useState(true);
 
-  const [dates, setDates] = useState([
-    { pontuation: 0, date: '2023-04-02' },
-    { pontuation: 0, date: '2023-05-07' },
-    { pontuation: 0, date: '2023-06-03' },
-    { pontuation: 0, date: '2023-07-09' },
-    { pontuation: 0, date: '2023-08-06' },
-    { pontuation: 0, date: '2023-09-10' },
-    { pontuation: 0, date: '2023-10-08' },
-    { pontuation: 0, date: '2023-11-05' },
-  ]);
-
   const fetchRanking = async () => {
     const ruleOne = selectedExam != "EfvFedkhOSML884He43N";
     if (!selectedExam) return;
@@ -55,6 +44,7 @@ const Geral = () => {
         );
         const data = [];
         querySnapshot.docs.forEach((el) => data.push(el.data()));
+        console.log(data);
         setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
       } else {
         setShowGun(false);
@@ -117,8 +107,7 @@ const Geral = () => {
 
   const trataResultado = (a) => {
     return a
-      .map(e => ({ ...e, exams: e.exams.filter(j => j.pontuation > 0) }))
-      .filter(e => e.exams.length >= 5);
+      .map(e => ({ ...e, exams: e.exams.filter(j => j.pontuation > 0) }));
   }
 
   const pegaOs8 = a => {
@@ -152,15 +141,8 @@ const Geral = () => {
   const normalizeArray = (inputArray) => {
     // Lista de datas desejadas
     const desiredDates = [
-      '2023-04-02',
-      '2023-05-07',
-      '2023-06-03',
-      '2023-07-09',
-      '2023-08-06',
-      '2023-09-10',
-      '2023-10-08',
-      '2023-11-05',
-      '2023-12-02'
+      '2024-03-03',
+      '2024-04-07',
     ];
 
     // Crie um objeto para armazenar os valores do array normalizado
@@ -279,31 +261,13 @@ const Geral = () => {
                   Pontuação
                 </th>
                 <th scope="col" className="px-6 py-3 text-center">
-                  Abr
+                  Mar
                 </th>
                 <th scope="col" className="px-6 py-3 text-center">
-                  Mai
+                  Abr
                 </th>
                 <th colSpan={2} scope="col" className="px-6 py-3 text-center">
-                  Jun
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Jul
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Ago
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Set
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Out
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Nov
-                </th>
-                <th scope="col" className="px-6 py-3 text-center ">
-                  Dez
+                  Mai
                 </th>
               </tr>
             </thead>
@@ -339,7 +303,7 @@ const Geral = () => {
                   {normalizeArray(el.exams).map((e, j) =>
                     <td
                       key={j}
-                      className={`text-gray-900 px-6 py-4 text-center ${e.destaque && 'bg-blue-gray-300'}`}
+                      className={`text-gray-900 px-6 py-4 text-center`}
                     >
                       {e.pontuation}
                     </td>

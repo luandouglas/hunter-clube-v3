@@ -12,7 +12,17 @@ const exams = [
     tipo_prova: "Apuração - Carabina Precisão 22 a 25 Metros",
     id: "EfvFedkhOSML884He43N",
     iconActive: carbine_dark,
-    icon: carbine
+    icon: carbine,
+    levels: [
+      {
+        value: "beginner",
+        label: "Iniciante",
+      },
+      {
+        label: "Master",
+        value: "master",
+      },
+    ],
   },
   {
     tipo_prova: "Trap 10",

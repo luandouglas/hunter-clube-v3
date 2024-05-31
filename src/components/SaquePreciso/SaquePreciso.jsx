@@ -32,8 +32,11 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
+
+      console.log(data[0].level);
+      setClassification(data[0].level)
     }
-  }, []);
+  }, [shooter]);
 
   useEffect(() => {
     fetchLevel();
@@ -80,7 +83,7 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       points: scores,
       pointsCounter: repeatedCounts,
       total: totalPoints,
-      level: userLevel,
+      level: classification,
       gun: gunType,
       examId,
       name: shooter,
@@ -92,7 +95,10 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
     const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
     setTotalPoints(total);
-    setClassification(getClassification(total));
+    if (classification == "") {
+      console.log('entrei');
+      setClassification(getClassification(total));
+    }
 
     setRepeatedCounts(countPoints(scores));
 
