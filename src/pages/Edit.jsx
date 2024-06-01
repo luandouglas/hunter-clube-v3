@@ -60,9 +60,8 @@ const Register = () => {
     setUsers(usersData);
   }, [id]);
   const fetchResult = async () => {
-    console.log(eventId, id);
     try {
-      console.log('entrei');
+
       if (eventId) {
 
         const examResultSnapshot = await query(

@@ -137,8 +137,7 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       second: scores.second,
       third: scores.third
     };
-    console.log(level);
-    console.log({
+    onSubmitExam({
       points,
       pointsCounter: repeatedCounts,
       total: totalPoints,
@@ -146,14 +145,6 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       examId,
       name: shooter,
     });
-    // onSubmitExam({
-    //   points,
-    //   pointsCounter: repeatedCounts,
-    //   total: totalPoints,
-    //   level: classification,
-    //   examId,
-    //   name: shooter,
-    // });
   };
 
   return (

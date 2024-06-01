@@ -43,7 +43,7 @@ const Geral = () => {
       );
       const data = [];
       querySnapshot.docs.forEach((el) => data.push(el.data()));
-      console.log(data);
+
       setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
     } else {
       setShowGun(false);

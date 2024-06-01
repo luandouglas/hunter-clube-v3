@@ -26,7 +26,7 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       setClassification(data[0].level)
       console.log('THE SHOOTER IS', data[0].level);
     }
-    console.log();
+
   }, [shooter]);
 
   useEffect(() => {

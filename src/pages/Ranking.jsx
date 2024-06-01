@@ -117,7 +117,7 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    console.log(data);
+
     const topTwoScores = findTopTwoScores(data);
     setRanking(topTwoScores);
   };
@@ -142,10 +142,10 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    console.log(data);
+
     const topTwoScores = findTopTwoScores(data);
     setRanking(topTwoScores);
-    console.log(topTwoScores);
+
   };
   const fetchPercursoCaca = async () => {
     setShowCategory(true);
@@ -317,11 +317,6 @@ const Ranking = () => {
     const topTwoScores = findTopTwoScores(data);
     setRanking(topTwoScores);
   };
-  const handleEditResult = async (event) => {
-    console.log(event);
-
-    navigate("/events");
-  }
 
   return (
     <Layout>

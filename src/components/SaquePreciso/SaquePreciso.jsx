@@ -36,7 +36,6 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       setClassification(data[0].level)
       console.log('THE SHOOTER IS ', data[0].level);
     }
-    console.log(shooter, gunType, examId);
   }, [shooter, gunType]);
 
   useEffect(() => {
