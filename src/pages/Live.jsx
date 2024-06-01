@@ -31,7 +31,7 @@ const Live = () => {
 
   useEffect(() => {
     const fetchFunctions = [
-      { label: "Small Pistol - Beginner", fetchFunc: fetchSmallPistol, level: "beginner", gun: null, id: "cpxPRShLAuDSmBwFKHXw" },
+      { label: "Small Pistol - Iniciante", fetchFunc: fetchSmallPistol, level: "beginner", gun: null, id: "cpxPRShLAuDSmBwFKHXw" },
       { label: "Small Pistol - Master", fetchFunc: fetchSmallPistol, level: "master", gun: null, id: "cpxPRShLAuDSmBwFKHXw" },
       { label: "Trap Americano", fetchFunc: fetchTrapAmericano, level: null, gun: null, id: "hej6E1jjnq81xZMGiqEi" },
       { label: "Carabina 22 Mira Aberta", fetchFunc: fetchCarabina22MiraAberta, level: null, gun: null, id: "EfvFedkhOSML884He43N" },
@@ -41,7 +41,7 @@ const Live = () => {
       { label: "Fogo Central - Master (Revolver)", fetchFunc: fetchFogoCentral, level: "master", gun: "revolver", id: "YchOCURkmZCTsymgHwG0" },
       { label: "Percurso de Caça", fetchFunc: fetchPercursoCaca, level: null, gun: null, id: "qnpGZ7u0IW01TZQ4olPn" },
       { label: "Percurso de Caça 20", fetchFunc: fetchPercursoCaca20, level: null, gun: null, id: "hzTpNUmS4eKFuDHzWQcs" },
-      { label: "Trap 10 - Beginner", fetchFunc: fetchTrap10, level: "beginner", gun: null, id: "3ZHw4gpIuBq477OGGrur" },
+      { label: "Trap 10 - Iniciante", fetchFunc: fetchTrap10, level: "beginner", gun: null, id: "3ZHw4gpIuBq477OGGrur" },
       { label: "Trap 10 - Master", fetchFunc: fetchTrap10, level: "master", gun: null, id: "3ZHw4gpIuBq477OGGrur" },
       { label: "Saque Preciso - Iniciante (Pistola)", fetchFunc: fetchSaquePreciso, level: "beginner", gun: "pistol", id: "KkAF46R6WrwZWq1FNhvX" },
       { label: "Saque Preciso - Master (Pistola)", fetchFunc: fetchSaquePreciso, level: "master", gun: "pistol", id: "KkAF46R6WrwZWq1FNhvX" },
@@ -49,13 +49,13 @@ const Live = () => {
       { label: "Saque Preciso - Master (Revolver)", fetchFunc: fetchSaquePreciso, level: "master", gun: "revolver", id: "KkAF46R6WrwZWq1FNhvX" },
       { label: "SM22 Apoiado - Master", fetchFunc: fetchSM22Apoiado, level: "master", gun: null, id: "q00RXisO4sQqOZ8JfqvW" },
       { label: "SM22 Apoiado - Super Master", fetchFunc: fetchSM22Apoiado, level: "super-master", gun: null, id: "q00RXisO4sQqOZ8JfqvW" },
-      { label: "SM22 Precisao - Beginner", fetchFunc: fetchSM22Precisao, level: "beginner", gun: null, id: "PCb1rh0OrOzxAmCTghGB" },
+      { label: "SM22 Precisao - Iniciante", fetchFunc: fetchSM22Precisao, level: "beginner", gun: null, id: "PCb1rh0OrOzxAmCTghGB" },
       { label: "SM22 Precisao - Master", fetchFunc: fetchSM22Precisao, level: "master", gun: null, id: "PCb1rh0OrOzxAmCTghGB" }
     ];
 
     let current = 0;
     const interval = setInterval(() => {
-      const { id, label, fetchFunc, level, gun } = fetchFunctions[9];
+      const { id, label, fetchFunc, level, gun } = fetchFunctions[current];
       setLabel(label);
       fetchFunc(id, level, gun);
       console.log('I HAVE CALLED', label);
