@@ -56,9 +56,9 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   const getClassification = (total) => {
     if (total <= 27) {
-      return 'beginner';
-    } else {
       return 'master';
+    } else {
+      return 'super-master';
     }
   };
 
