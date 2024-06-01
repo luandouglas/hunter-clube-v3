@@ -130,16 +130,6 @@ const exams = [
   },
   {
     tipo_prova: "Trap Americano",
-    levels: [
-      {
-        label: "Iniciante",
-        value: "beginner",
-      },
-      {
-        value: "master",
-        label: "Master",
-      },
-    ],
     iconActive: shotgun_dark,
     icon: shotgun,
     id: "hej6E1jjnq81xZMGiqEi",
@@ -147,12 +137,12 @@ const exams = [
   {
     levels: [
       {
-        label: "Iniciante",
-        value: "beginner",
-      },
-      {
         label: "Master",
         value: "master",
+      },
+      {
+        label: "Super Master",
+        value: "super-master",
       },
     ],
     iconActive: carbine_dark,
@@ -161,16 +151,6 @@ const exams = [
     id: "q00RXisO4sQqOZ8JfqvW",
   },
   {
-    levels: [
-      {
-        value: "beginner",
-        label: "Iniciante",
-      },
-      {
-        value: "master",
-        label: "Master",
-      },
-    ],
     iconActive: shotgun_dark,
     icon: shotgun,
     tipo_prova: "Percurso de Caça",
