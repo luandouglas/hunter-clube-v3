@@ -24,51 +24,35 @@ const Geral = () => {
   const [showGun, setShowGun] = useState(true);
 
   const fetchRanking = async () => {
-    const ruleOne = selectedExam != "EfvFedkhOSML884He43N";
+
     if (!selectedExam) return;
     if (!selectedLevel && ruleOne) return;
     if (guns.length > 0 && !selectedGun) return;
     setRanking([]);
 
-    if (ruleOne) {
-      if (selectedGun) {
-        setShowGun(true);
-        const querySnapshot = await getDocs(
-          query(
-            collection(db, "levels-24"),
-            where("examId", "==", selectedExam),
-            where("level", "==", selectedLevel),
-            where("gun", "==", selectedGun),
-            orderBy("pontuation", "desc")
-          )
-        );
-        const data = [];
-        querySnapshot.docs.forEach((el) => data.push(el.data()));
-        console.log(data);
-        setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
-      } else {
-        setShowGun(false);
-        setCanSee(true);
-        const querySnapshot = await getDocs(
-          query(
-            collection(db, "levels-24"),
-            where("examId", "==", selectedExam),
-            where("level", "==", selectedLevel),
-            orderBy("pontuation", "desc")
-          )
-        );
-        const data = [];
-        querySnapshot.docs.forEach((el) => data.push(el.data()));
-        setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
-
-      }
-    } else {
-      setShowGun(false);
-      setCanSee(false);
+    if (selectedGun) {
+      setShowGun(true);
       const querySnapshot = await getDocs(
         query(
           collection(db, "levels-24"),
           where("examId", "==", selectedExam),
+          where("level", "==", selectedLevel),
+          where("gun", "==", selectedGun),
+          orderBy("pontuation", "desc")
+        )
+      );
+      const data = [];
+      querySnapshot.docs.forEach((el) => data.push(el.data()));
+      console.log(data);
+      setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
+    } else {
+      setShowGun(false);
+      setCanSee(true);
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "levels-24"),
+          where("examId", "==", selectedExam),
+          where("level", "==", selectedLevel),
           orderBy("pontuation", "desc")
         )
       );
@@ -77,6 +61,7 @@ const Geral = () => {
       setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
 
     }
+
   };
 
   const handleChangeExam = (value) => {
@@ -143,6 +128,7 @@ const Geral = () => {
     const desiredDates = [
       '2024-03-03',
       '2024-04-07',
+      '2024-05-05',
     ];
 
     // Crie um objeto para armazenar os valores do array normalizado

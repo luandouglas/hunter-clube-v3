@@ -25,6 +25,7 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       query(
         collection(db, "levels-24"),
         where("name", "==", shooter),
+        where("gun", "==", gunType),
         where("examId", "==", examId)
       )
     );
@@ -32,11 +33,11 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
-
-      console.log(data[0].level);
       setClassification(data[0].level)
+      console.log('THE SHOOTER IS ', data[0].level);
     }
-  }, [shooter]);
+    console.log(shooter, gunType, examId);
+  }, [shooter, gunType]);
 
   useEffect(() => {
     fetchLevel();
@@ -96,7 +97,6 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
     setTotalPoints(total);
     if (classification == "") {
-      console.log('entrei');
       setClassification(getClassification(total));
     }
 

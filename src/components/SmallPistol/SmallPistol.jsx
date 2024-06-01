@@ -2,12 +2,9 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useState, useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
-  const [gunType, setGunType] = useState('pistol');
   const [scores, setScores] = useState({
     first: Array(5).fill(0),
     second: Array(5).fill(0),
-    third: Array(5).fill(0),
-    fourth: Array(5).fill(0)
   });
   const [repeatedCounts, setRepeatedCounts] = useState({});
   const [totalPoints, setTotalPoints] = useState(0);
@@ -30,12 +27,15 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
-    console.log(shooter);
+
     if (data.length > 0) {
       setLevel(data[0]);
-      console.log("LEVEL", data[0].level)
-
       setClassification(data[0].level)
+      console.log('THE SHOOTER IS', data[0].level);
+    } else {
+      console.log('THE SHOOTER NOT HAS LEVEL');
+
+      setClassification("")
     }
   }, [shooter]);
 
@@ -94,7 +94,10 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
     const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
     setTotalPoints(total);
-    setClassification(getClassification(total));
+    if (classification == '') {
+
+      setClassification(getClassification(total));
+    }
     setRepeatedCounts(countPoints(scores));
 
     setIsSubmitDisabled(false); // Enable submit button after calculating total points
@@ -129,13 +132,11 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   return (
     <div className="min-h-screen p-4 bg-gray-100">
       <div className="max-w-lg mx-auto bg-white p-6 rounded-md shadow-md">
-        {['first', 'second', 'third', 'fourth'].map((series, seriesIndex) => (
+        {['first', 'second'].map((series, seriesIndex) => (
           <div key={seriesIndex} className="mb-4">
             <h3 className="text-lg font-semibold mb-2">
               {series === 'first' && '1ª Série: Alvo de precisão á 07 metros'}
-              {series === 'second' && '2ª Série: Alvo de precisão á 07 metros'}
-              {series === 'third' && '3ª Série: Alvo de duelo á 10 metros'}
-              {series === 'fourth' && '4ª Série: Alvo de duelo á 10 metros'}
+              {series === 'second' && '2ª Série: Alvo de precisão á 10 metros'}
             </h3>
             <div className="grid grid-cols-5 gap-2">
               {scores[series].map((shot, shotIndex) => (
@@ -145,7 +146,7 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                   min="0"
                   max="12"
                   value={shot}
-                  onChange={(e) => handleInputChange(e, series, shotIndex, ['first', 'second'].includes(series) ? 10 : 12)}
+                  onChange={(e) => handleInputChange(e, series, shotIndex, ['first'].includes(series) ? 10 : 12)}
                   className="h-10 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               ))}

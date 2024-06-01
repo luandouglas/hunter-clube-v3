@@ -26,7 +26,10 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const flatScores = scores.flat();
     const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
     setTotalPoints(total);
-    setClassification(total <= 140 ? 'beginner' : 'master');
+    if (classification == '') {
+
+      setClassification(total <= 140 ? 'beginner' : 'master');
+    }
 
     setRepeatedCounts(countPoints(scores));
 
@@ -66,6 +69,8 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
+      setClassification(data[0].level)
+      console.log('THE SHOOTER IS', data[0].level)
     }
   }, [shooter, examId]);
 

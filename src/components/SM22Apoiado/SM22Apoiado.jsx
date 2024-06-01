@@ -8,7 +8,6 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     second: Array(10).fill(false),
     third: Array(10).fill(false),
     fourth: Array(10).fill(false),
-    fifth: Array(10).fill(false)
   });
   const [totalPoints, setTotalPoints] = useState(0);
   const [classification, setClassification] = useState('');
@@ -25,12 +24,12 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   };
 
   const calculateTotalPoints = () => {
-    const flatScores = scores.first.concat(scores.second, scores.third, scores.fourth, scores.fifth);
+    const flatScores = scores.first.concat(scores.second, scores.third, scores.fourth);
 
     // Calcula a pontuação total
     const total = flatScores.reduce((sum, score, index) => {
       if (score === true) {
-        if (index >= scores.first.length + scores.second.length + scores.third.length + scores.fourth.length) {
+        if (index >= scores.first.length + scores.second.length + scores.third.length) {
           return sum + 0.1; // Cada galinha derrubada à 100 metros soma 0,1 ponto
         }
         return sum + 1; // Cada acerto em porcos, perus, carneiros e galinhas soma 1 ponto
@@ -39,7 +38,9 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }, 0);
 
     setTotalPoints(Number(total).toFixed(1));
-    setClassification(getClassification(total));
+    if (classification == '') {
+      setClassification(getClassification(total));
+    }
 
     // Contagem de ocorrências de cada valor
     const countOccurrences = flatScores.reduce((acc, score) => {
@@ -76,6 +77,8 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
+      setClassification(data[0].level)
+      console.log('THE SHOOTER IS', data[0].level);
     }
   }, [shooter, examId]);
 
@@ -109,32 +112,27 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   }, [shooter, fetchLevel]);
 
   const onSubmit = () => {
-    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
-
     onSubmitExam({
       points: scores,
       pointsCounter: repeatedCounts,
-      total: totalPoints,
-      level: userLevel,
+      total: Number(totalPoints),
+      level: classification,
       examId,
       name: shooter,
     });
   };
 
-
-
   return (
     <div className="min-h-[460px] p-4 bg-gray-100">
       <div className="max-w-lg mx-auto bg-white p-6  shadow-md">
 
-        {['first', 'second', 'third', 'fourth', 'fifth'].map((sequence, seqIndex) => (
+        {['first', 'second', 'third', 'fourth'].map((sequence, seqIndex) => (
           <div key={seqIndex} className="mb-4">
             <h3 className="text-lg font-semibold mb-2">
               {sequence === 'first' && 'Silhueta Porcos 50 metros'}
               {sequence === 'second' && 'Silhueta Peru 75 metros'}
               {sequence === 'third' && 'Silhueta Carneiro 100 metros'}
               {sequence === 'fourth' && 'Silhueta Galinha 100 metros'}
-              {sequence === 'fifth' && 'Silhueta Galinha 100 metros'}
             </h3>
             <div className="grid grid-cols-5 gap-2">
               {scores[sequence].map((shot, shotIndex) => (
@@ -143,7 +141,7 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                   <input
                     type="checkbox"
                     checked={shot}
-                    disabled={sequence === "fifth" && totalPoints < 30}
+                    disabled={sequence === "fourth" && totalPoints < 30}
                     onChange={(e) => handleInputChange(e, sequence, shotIndex)}
                     className="h-5 p-2 border border-gray-300"
                   />

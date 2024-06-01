@@ -42,7 +42,9 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       scores.second.reduce((count, score) => count + (score === true ? 10 : 0), 0) +
       scores.third.reduce((count, score) => count + (score === true ? 10 : 0), 0);
     setTotalPoints(total);
-    setClassification(getClassification(total));
+    if (classification == "") {
+      setClassification(getClassification(total));
+    }
 
     setRepeatedCounts(countPoints(scores));
     setIsSubmitDisabled(false); // Enable submit button after calculating total points
@@ -91,8 +93,10 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
+      setClassification(data[0].level)
+      console.log('THE SHOOTER IS', data[0].level);
     }
-  }, []);
+  }, [shooter]);
 
   useEffect(() => {
     fetchLevel();
@@ -133,15 +137,23 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       second: scores.second,
       third: scores.third
     };
-    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
-    onSubmitExam({
+    console.log(level);
+    console.log({
       points,
       pointsCounter: repeatedCounts,
       total: totalPoints,
-      level: userLevel,
+      level: classification,
       examId,
       name: shooter,
     });
+    // onSubmitExam({
+    //   points,
+    //   pointsCounter: repeatedCounts,
+    //   total: totalPoints,
+    //   level: classification,
+    //   examId,
+    //   name: shooter,
+    // });
   };
 
   return (

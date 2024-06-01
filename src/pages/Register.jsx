@@ -24,6 +24,7 @@ import SmallPistol from "../components/SmallPistol/SmallPistol";
 import TrapAmericano from "../components/TrapAmericano/TrapAmericano";
 import { exams } from "../utils";
 import Trap10 from "../components/Trap10/Trap10";
+import PercursoCaca20 from "../components/PercursoCaca20/PercursoCaca";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -87,6 +88,8 @@ const Register = () => {
         return 7;
       case "3ZHw4gpIuBq477OGGrur":
         return 8
+      case 'hzTpNUmS4eKFuDHzWQcs':
+        return 9
     }
   };
 
@@ -140,11 +143,11 @@ const Register = () => {
           const querySnapshot = await getDocs(
             query(
               collection(db, "levels-24"),
-              where("firstRankingDate", "==", event.date),
               where("examId", "==", result.examId),
               where("name", "==", result.name)
             )
           );
+          console.log(event, result.examId, result.name);
           const level = [];
           querySnapshot.forEach((e) => {
             level.push({ ...e.data(), id: e.id });
@@ -159,6 +162,7 @@ const Register = () => {
             await updateDoc(querySnapshot.ref, aux);
           } else {
             let newLevel = createLevel(data);
+            console.log(newLevel);
 
             await addDoc(collection(db, "levels-24"), newLevel);
           }
@@ -392,6 +396,18 @@ const Register = () => {
           )}
           {getExamSelected() === 8 && (
             <Trap10
+              examId={exams.find((e) => e.tipo_prova == selectedExam).id}
+              shooter={users.find((e) => e.id === selectedUser).nome}
+              dateEvent={event.date}
+              onSubmitExam={(e) => {
+                setResult({ ...e, userId: selectedUser });
+                setOpen(true);
+              }}
+            />
+          )}
+
+          {getExamSelected() === 9 && (
+            <PercursoCaca20
               examId={exams.find((e) => e.tipo_prova == selectedExam).id}
               shooter={users.find((e) => e.id === selectedUser).nome}
               dateEvent={event.date}

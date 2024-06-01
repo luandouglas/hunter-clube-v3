@@ -2,7 +2,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 
-const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
+const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState({
     first: [false, false, false, false, false],
     second: [false, false, false, false, false],
@@ -130,12 +130,21 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     <>
       <div className="flex flex-row items-center">
         <div className="flex flex-row space-x-3 text-center">
-          {[1, 2, 3].map((e) => (
+          {[1, 2, 3, 4].map((e) => (
             <div key={e}>
               <span className="w-24">{e}ª Serie</span>
               <div className="flex flex-row items-center">
                 <div className="flex flex-col">
-
+                  <div className="border border-gray-400 w-auto h-[42px] flex justify-center items-center">
+                    <input
+                      className="focus:outline-none focus:border-gray-600 focus:shadow-none "
+                      type="checkbox"
+                      value={values[getAttr(e)][0] || ""}
+                      onChange={(event) =>
+                        handleCheckedChange(getAttr(e), 0, event.target.checked)
+                      }
+                    />
+                  </div>
                   <div className="flex flex-row">
                     <div className="border border-gray-400 w-14 h-[42px] flex justify-center items-center">
                       <input
@@ -221,4 +230,4 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   );
 };
 
-export default PercursoCaca;
+export default PercursoCaca20;

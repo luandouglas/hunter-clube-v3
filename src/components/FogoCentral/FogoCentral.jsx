@@ -25,6 +25,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       query(
         collection(db, "levels-24"),
         where("name", "==", shooter.trimEnd()),
+        where("gun", "==", gunType),
         where("examId", "==", examId)
       )
     );
@@ -32,11 +33,11 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
-      console.log(data[0].level);
       setClassification(data[0].level)
+      console.log('THE SHOOTER IS', data[0].level);
     }
     console.log(querySnapshot.docs.map(e => e.data()));
-  }, []);
+  }, [shooter, gunType]);
 
   useEffect(() => {
     fetchLevel();
@@ -95,7 +96,10 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
     const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
     setTotalPoints(total);
-    setClassification(getClassification(total));
+    if (classification == '') {
+
+      setClassification(getClassification(total));
+    }
     setRepeatedCounts(countPoints(scores));
 
     setIsSubmitDisabled(false); // Enable submit button after calculating total points

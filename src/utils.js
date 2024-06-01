@@ -176,6 +176,14 @@ const exams = [
     tipo_prova: "Percurso de Caça",
     id: "qnpGZ7u0IW01TZQ4olPn",
   },
+  {
+
+    iconActive: shotgun_dark,
+    icon: shotgun,
+    tipo_prova: "Percurso de Caça 20",
+    id: "hzTpNUmS4eKFuDHzWQcs",
+
+  }
 ];
 
 export { exams }

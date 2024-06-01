@@ -5,7 +5,7 @@ import { db } from "../../../firebaseConfig";
 const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState();
 
-  const [gun, setGun] = React.useState("");
+  const [classification, setClassification] = React.useState("");
 
   const [level, setLevel] = React.useState();
   const fetchLevel = useCallback(async () => {
@@ -23,8 +23,11 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
       setLevel(data[0]);
+      setClassification(data[0].level)
+      console.log('THE SHOOTER IS', data[0].level);
     }
-  }, []);
+    console.log();
+  }, [shooter]);
 
   useEffect(() => {
     fetchLevel();
@@ -66,7 +69,7 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
         return "master";
       }
     } else {
-      if (values <= 8) {
+      if (Number(values) <= 8) {
         return "beginner";
       } else {
         return "master";
@@ -74,11 +77,20 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
   };
 
+
+  const getClassification = (total) => {
+    if (total <= 8) {
+      return 'beginner';
+    } else {
+      return 'master';
+    }
+  };
+
   const onSubmit = () => {
     onSubmitExam({
-      points: values,
-      total: values,
-      level: adjustLevel(level, dateEvent),
+      points: Number(values),
+      total: Number(values),
+      level: classification == '' ? getClassification(Number(values)) : classification,
       pointsCounter: {},
       examId,
       name: shooter,

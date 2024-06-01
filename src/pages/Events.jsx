@@ -209,6 +209,7 @@ const Events = () => {
                       </Link>
                     </Tooltip>
                   </td>
+
                 </div>
               </td>
             </tr>
