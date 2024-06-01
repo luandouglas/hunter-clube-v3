@@ -60,7 +60,7 @@ const Live = () => {
       fetchFunc(id, level, gun);
       console.log('I HAVE CALLED', label);
       current = (current + 1) % fetchFunctions.length;
-    }, 2000); // 20 segundos de intervalo
+    }, 20000); // 20 segundos de intervalo
 
     return () => clearInterval(interval);
   }, []);
