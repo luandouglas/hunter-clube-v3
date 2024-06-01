@@ -1,6 +1,6 @@
 import { collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../firebaseConfig";
 import Layout from "../components/Layout";
 import { exams } from "../utils";
@@ -290,10 +290,16 @@ const Ranking = () => {
 
   return (
     <Layout>
-      <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking</h1>
 
       <br></br>
-
+      <div className="flex flex-row items-center gap-4">
+        <button onClick={() => navigate(-1)} >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+          </svg>
+        </button>
+        <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking</h1>
+      </div>
       <div className="relative w-full flex flex-row items-center gap-4 mb-4">
         <select
           className="text-blue-gray-700 font-sans font-normal text-left outline outline-0 focus:outline-0 disabled:bg-blue-gray-50 disabled:border-0 transition-all border text-sm px-3 py-2.5 rounded-[7px] border-blue-gray-200"
@@ -433,7 +439,7 @@ const Ranking = () => {
           </table>
         ) : null}
       </div>
-    </Layout>
+    </Layout >
   );
 };
 export default Ranking;

@@ -164,7 +164,7 @@ const Events = () => {
               <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <td scope="row"
                   className="px-3 py-4 font-medium whitespace-nowrap ">
-                  <span className="text-gray-900 hover:text-white bg-transparent hover:bg-green-800 p-3 rounded-lg">Clube Hunter - {getMonthName(e.date)}</span>
+                  <span className="text-gray-900 bg-transparent p-3 rounded-lg">{e.name}</span>
                 </td>
                 <td scope="row"
                   className="pl-4 py-4 font-medium whitespace-nowrap ">
@@ -180,11 +180,9 @@ const Events = () => {
                       </Link>
                     </Tooltip>
                     <td>
-                      <Tooltip content="Visualizar eventos">
+                      <Tooltip content="Ver resultados">
                         <Link to={`/ranking/${e.id}`}>
-
                           <button className="bg-blue-800 p-2 rounded-md">
-
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6 text-white">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
@@ -192,12 +190,11 @@ const Events = () => {
                           </button>
                         </Link>
                       </Tooltip>
-
                     </td>
                     <td>
                       <Tooltip content="Ver rank em tempo real">
                         <Link to={`/live/${e.id}`}>
-                          <button className="bg-blue-800 p-2 rounded-md h-10 w-10">
+                          <button className="bg-red-500 p-2 rounded-md h-10 w-10">
                             <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="auto" height="auto" viewBox="0 0 48 48">
                               <circle cx="24" cy="24" r="6" fill="#FFF"></circle><path fill="#FFF" d="M17.09,16.789L14.321,13.9C11.663,16.448,10,20.027,10,24s1.663,7.552,4.321,10.1l2.769-2.889 C15.19,29.389,14,26.833,14,24C14,21.167,15.19,18.61,17.09,16.789z"></path><path fill="#FFF" d="M33.679,13.9l-2.769,2.889C32.81,18.611,34,21.167,34,24c0,2.833-1.19,5.389-3.09,7.211l2.769,2.889 C36.337,31.552,38,27.973,38,24S36.337,16.448,33.679,13.9z"></path><g><path fill="#FFF" d="M11.561,11.021l-2.779-2.9C4.605,12.125,2,17.757,2,24s2.605,11.875,6.782,15.879l2.779-2.9 C8.142,33.701,6,29.1,6,24S8.142,14.299,11.561,11.021z"></path><path fill="#FFF" d="M39.218,8.121l-2.779,2.9C39.858,14.299,42,18.9,42,24s-2.142,9.701-5.561,12.979l2.779,2.9 C43.395,35.875,46,30.243,46,24S43.395,12.125,39.218,8.121z"></path></g>
                             </svg>

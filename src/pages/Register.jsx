@@ -180,20 +180,37 @@ const Register = () => {
   };
   const addOrUpdateExam = (obj, newExam, date) => {
     const { exams } = obj;
-    const existingExam = exams.find((exam) => exam.date === date);
-    if (existingExam) {
-      if (existingExam.pontuation < newExam.results.total) {
-        existingExam.pontuation = newExam.results.total;
-      }
+    const totalPontuation = newExam.results?.total || 0;
+
+    // Filtrar os exames da data específica '2024-06-01'
+    const examsForDate = exams.filter(exam => exam.date === date);
+
+    // Se houver mais de dois exames para essa data, manter apenas os dois maiores
+    if (examsForDate.length >= 2) {
+      examsForDate.sort((a, b) => b.pontuation - a.pontuation);
+      examsForDate.splice(2);
+    }
+
+    // Adicionar ou atualizar o novo exame para a data específica
+    const existingExamIndex = exams.findIndex(exam => exam.date === date);
+    if (existingExamIndex !== -1) {
+      exams[existingExamIndex].pontuation = totalPontuation;
     } else {
-      exams.push({ date: date, pontuation: newExam.results.total });
+      exams.push({ date, pontuation: totalPontuation });
     }
-    if (newExam.results?.level) {
-      obj.level = newExam.results.level;
-    }
+
+    // Atualizar o total de pontuação
     obj.pontuation = exams.reduce((acc, exam) => acc + exam.pontuation, 0);
+
+    // Atualizar o nível se houver no novo exame
+    obj.level = newExam.results?.level || obj.level;
+
+    console.log(obj);
     return obj;
   };
+
+
+
 
   const createLevel = (obj) => {
     let temp = {};

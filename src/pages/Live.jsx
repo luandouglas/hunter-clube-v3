@@ -8,6 +8,9 @@ import {
 import { useEffect, useState } from "react";
 import { db } from "../../firebaseConfig";
 import { exams } from "../utils";
+import { Link, useParams } from "react-router-dom";
+
+
 
 const Live = () => {
   const [ranking, setRanking] = useState([]);
@@ -20,209 +23,204 @@ const Live = () => {
   const [guns, setGuns] = useState([]);
 
   const [canSee, setCanSee] = useState(true);
-  const [showGun, setShowGun] = useState(true);
+  const [showGun, setShowGun] = useState(true)
 
   const [label, setLabel] = useState('')
+  const { eventId } = useParams()
+
 
   useEffect(() => {
-    let current = 1
+    const fetchFunctions = [
+      { label: "Small Pistol - Beginner", fetchFunc: fetchSmallPistol, level: "beginner", gun: null, id: "cpxPRShLAuDSmBwFKHXw" },
+      { label: "Small Pistol - Master", fetchFunc: fetchSmallPistol, level: "master", gun: null, id: "cpxPRShLAuDSmBwFKHXw" },
+      { label: "Trap Americano", fetchFunc: fetchTrapAmericano, level: null, gun: null, id: "hej6E1jjnq81xZMGiqEi" },
+      { label: "Carabina 22 Mira Aberta", fetchFunc: fetchCarabina22MiraAberta, level: null, gun: null, id: "EfvFedkhOSML884He43N" },
+      { label: "Fogo Central - Iniciante (Pistola)", fetchFunc: fetchFogoCentral, level: "beginner", gun: "pistol", id: "YchOCURkmZCTsymgHwG0" },
+      { label: "Fogo Central - Master (Pistola)", fetchFunc: fetchFogoCentral, level: "master", gun: "pistol", id: "YchOCURkmZCTsymgHwG0" },
+      { label: "Fogo Central - Iniciante (Revolver)", fetchFunc: fetchFogoCentral, level: "beginner", gun: "revolver", id: "YchOCURkmZCTsymgHwG0" },
+      { label: "Fogo Central - Master (Revolver)", fetchFunc: fetchFogoCentral, level: "master", gun: "revolver", id: "YchOCURkmZCTsymgHwG0" },
+      { label: "Percurso de Caça", fetchFunc: fetchPercursoCaca, level: null, gun: null, id: "qnpGZ7u0IW01TZQ4olPn" },
+      { label: "Percurso de Caça 20", fetchFunc: fetchPercursoCaca20, level: null, gun: null, id: "hzTpNUmS4eKFuDHzWQcs" },
+      { label: "Trap 10 - Beginner", fetchFunc: fetchTrap10, level: "beginner", gun: null, id: "3ZHw4gpIuBq477OGGrur" },
+      { label: "Trap 10 - Master", fetchFunc: fetchTrap10, level: "master", gun: null, id: "3ZHw4gpIuBq477OGGrur" },
+      { label: "Saque Preciso - Iniciante (Pistola)", fetchFunc: fetchSaquePreciso, level: "beginner", gun: "pistol", id: "KkAF46R6WrwZWq1FNhvX" },
+      { label: "Saque Preciso - Master (Pistola)", fetchFunc: fetchSaquePreciso, level: "master", gun: "pistol", id: "KkAF46R6WrwZWq1FNhvX" },
+      { label: "Saque Preciso - Iniciante (Revolver)", fetchFunc: fetchSaquePreciso, level: "beginner", gun: "revolver", id: "KkAF46R6WrwZWq1FNhvX" },
+      { label: "Saque Preciso - Master (Revolver)", fetchFunc: fetchSaquePreciso, level: "master", gun: "revolver", id: "KkAF46R6WrwZWq1FNhvX" },
+      { label: "SM22 Apoiado - Master", fetchFunc: fetchSM22Apoiado, level: "master", gun: null, id: "q00RXisO4sQqOZ8JfqvW" },
+      { label: "SM22 Apoiado - Super Master", fetchFunc: fetchSM22Apoiado, level: "super-master", gun: null, id: "q00RXisO4sQqOZ8JfqvW" },
+      { label: "SM22 Precisao - Beginner", fetchFunc: fetchSM22Precisao, level: "beginner", gun: null, id: "PCb1rh0OrOzxAmCTghGB" },
+      { label: "SM22 Precisao - Master", fetchFunc: fetchSM22Precisao, level: "master", gun: null, id: "PCb1rh0OrOzxAmCTghGB" }
+    ];
+
+    let current = 0;
     const interval = setInterval(() => {
-      switch (current) {
-        case 1:
-          setLabel("Carabina de precisão 22 a 25 metros")
-          fetchRanking("EfvFedkhOSML884He43N", "", "")
-          current++;
-          break;
-        case 2:
-          setLabel("Saque Preciso - Iniciante (Pistola)")
-          fetchRanking("KkAF46R6WrwZWq1FNhvX", "pistol", "beginner")
-          current++;
-          break;
-        case 3:
-          setLabel("Saque Preciso - Master (Pistola)")
-          fetchRanking("KkAF46R6WrwZWq1FNhvX", "pistol", "master")
-          current++;
-          break;
-        case 4:
-          setLabel("Saque Preciso - Iniciante (Revolver)")
-          fetchRanking("KkAF46R6WrwZWq1FNhvX", "revolver", "beginner")
-          current++;
-          break;
-        case 5:
-          setLabel("Saque Preciso - Master (Revolver)")
-          fetchRanking("KkAF46R6WrwZWq1FNhvX", "revolver", "master")
-          current++;
-          break;
-        case 6:
-          setLabel("Silhueta Metálica 22 e Precisão - Iniciante")
-          fetchRanking("KkAF46R6WrwZWq1FNhvX", "", "beginner")
-          current++;
-          break;
-        case 7:
-          setLabel("Silhueta Metálica 22 e Precisão - Master")
-          fetchRanking("KkAF46R6WrwZWq1FNhvX", "", "master")
-          current++;
-          break;
-        case 8:
-          setLabel("Silhueta Metálica 22 e Precisão - Super Master")
-          fetchRanking("KkAF46R6WrwZWq1FNhvX", "", "super-master")
-          current++;
-          break;
-        case 9:
-          setLabel("Fogo Central - Iniciante (Pistola)")
-          fetchRanking("YchOCURkmZCTsymgHwG0", "pistol", "beginner")
-          current++;
-          break;
-        case 10:
-          setLabel("Fogo Central - Master (Pistola)")
-          fetchRanking("YchOCURkmZCTsymgHwG0", "pistol", "master")
-          current++;
-          break;
-        case 11:
-          setLabel("Fogo Central - Iniciante (Revolver)")
-          fetchRanking("YchOCURkmZCTsymgHwG0", "revolver", "beginner")
-          current++;
-          break;
-        case 12:
-          setLabel("Fogo Central - Master (Revolver)")
-          setSelectedExam("EfvFedkhOSML884He43N")
-          fetchRanking("YchOCURkmZCTsymgHwG0", "revolver", "master")
-          current++;
-          break;
-        case 13:
-          setLabel("Small Pistol - Iniciante")
-          fetchRanking("cpxPRShLAuDSmBwFKHXw", "", "beginner")
-          current++;
-          break;
-        case 14:
-          setLabel("Small Pistol - Master")
-          fetchRanking("cpxPRShLAuDSmBwFKHXw", "", "master")
-          current++;
-          break;
-        case 15:
-          setLabel("Silhueta Metálica Apoiado - Iniciante")
-          fetchRanking("q00RXisO4sQqOZ8JfqvW", "", "beginner")
-          current++;
-          break;
-        case 16:
-          setLabel("Trap 10 - Iniciante")
-          fetchRanking("3ZHw4gpIuBq477OGGrur", "", "beginner")
-          current++;
-          break;
-        case 17:
-          setLabel("Trap 10 - Master")
-          fetchRanking("3ZHw4gpIuBq477OGGrur", "", "beginner")
-          current++;
-          break;
-        case 18:
-          setLabel("Silhueta Metálica Apoiado - Master")
-          fetchRanking("q00RXisO4sQqOZ8JfqvW", "", "master")
-          current = 1;
-          break;
-      }
-    }, 10000);
-  }, [])
+      const { id, label, fetchFunc, level, gun } = fetchFunctions[9];
+      setLabel(label);
+      fetchFunc(id, level, gun);
+      console.log('I HAVE CALLED', label);
+      current = (current + 1) % fetchFunctions.length;
+    }, 2000); // 20 segundos de intervalo
 
-  const fetchRanking = async (exam, gun, level) => {
-    const ruleOne = exam != "EfvFedkhOSML884He43N";
-    if (!exam) return;
-    if (!level && ruleOne) return;
-    if (guns.length > 0 && !gun) return;
-    setRanking([]);
-    if (ruleOne) {
-      if (gun !== "") {
-        setShowGun(true);
-        const querySnapshot = await getDocs(
-          query(
-            collection(db, "levels-24"),
-            where("examId", "==", exam),
-            where("level", "==", level),
-            where("gun", "==", gun),
-            orderBy("pontuation", "desc")
-          )
-        );
-        const data = [];
-        querySnapshot.docs.forEach((el) => data.push(el.data()));
-        setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
-      } else {
-        setShowGun(false);
-        setCanSee(true);
-        const querySnapshot = await getDocs(
-          query(
-            collection(db, "levels-24"),
-            where("examId", "==", exam),
-            where("level", "==", level),
-            orderBy("pontuation", "desc")
-          )
-        );
-        const data = [];
-        querySnapshot.docs.forEach((el) => data.push(el.data()));
-        setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
+    return () => clearInterval(interval);
+  }, []);
 
+  const fetchRanking = async (examId, level, gun, ordering) => {
+    try {
+      let q = query(collection(db, "exam-results"));
+
+      if (examId) {
+        q = query(q, where("examId", "==", examId));
       }
-    } else {
-      setShowGun(false);
-      setCanSee(false);
-      const querySnapshot = await getDocs(
-        query(
-          collection(db, "levels-24"),
-          where("examId", "==", exam),
-          orderBy("pontuation", "desc")
-        )
-      );
+      if (eventId) {
+        q = query(q, where("eventId", "==", eventId));
+      }
+      if (level) {
+        q = query(q, where("results.level", "==", level));
+      }
+      if (gun) {
+        q = query(q, where("results.gun", "==", gun));
+      }
+
+      if (ordering && ordering.length > 0) {
+        ordering.forEach((order) => {
+          q = query(q, orderBy(order.field, order.direction));
+        });
+      }
+
+      const querySnapshot = await getDocs(q);
       const data = [];
-      querySnapshot.docs.forEach((el) => data.push(el.data()));
-      setRanking(trataResultado(data.map(e => ({ ...e, pontuation: pegaOs8(e).pontuation, exams: pegaOs8(e).exams }))).sort((a, b) => b.pontuation - a.pontuation));
+      querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
+      // Chama a função para encontrar os dois maiores resultados e exibe no console
+      const topTwoScores = findTopTwoScores(data);
+      setRanking(topTwoScores);
+      console.log(topTwoScores);
+    } catch (error) {
+      console.error("Error fetching ranking: ", error);
     }
   };
 
-  const handleChangeExam = (value) => {
-    setSelectedExam(value);
-    const find = exams.find((e) => e.id == value);
-    if (!find?.guns) {
-      setGuns([]);
-      setSelectedGun("");
-    } else {
-      setGuns(find.guns);
-      setSelectedGun("pistol");
+
+  const findTopTwoScores = (data) => {
+    const topTwoScores = [];
+
+    // Agrupa os resultados pelo nome da pessoa
+    const groupedData = data.reduce((acc, curr) => {
+      const name = curr.name;
+      if (!acc[name]) {
+        acc[name] = [];
+      }
+      acc[name].push(curr.results.total);
+      return acc;
+    }, {});
+
+    // Encontra os dois maiores resultados para cada pessoa e os adiciona ao array de resultados
+    for (const name in groupedData) {
+      const scores = groupedData[name];
+      const sortedScores = scores.sort((a, b) => b - a);
+      const topTwo = sortedScores.slice(0, 2);
+      const total = topTwo.reduce((acc, score) => acc + score, 0);
+      topTwoScores.push({ name, scores: topTwo, total });
     }
 
-    if (!find?.levels) {
-      handleChangeLevel("");
-    } else {
-      handleChangeLevel("beginner");
-    }
-    setLevels(find?.levels || []);
-  };
-  const handleChangeLevel = (value) => {
-    setSelectedLevel(value);
+    return topTwoScores;
   };
 
-  const handleChangeGun = (value) => {
-    setSelectedGun(value);
+  // Exemplo de uso da função fetchRanking com as provas específicas
+  const fetchCarabina22MiraAberta = (examId, level, gun) => {
+    fetchRanking(examId, level, null, [
+      { field: "results.total", direction: "desc" },
+      { field: "results.pointsCounter.12", direction: "desc" },
+      { field: "results.pointsCounter.10", direction: "desc" },
+      { field: "results.pointsCounter.9", direction: "desc" },
+      { field: "results.pointsCounter.8", direction: "desc" },
+      { field: "results.pointsCounter.7", direction: "desc" },
+      { field: "results.pointsCounter.6", direction: "desc" }
+    ]);
   };
 
-  const trataResultado = (a) => {
-    return a
-      .map(e => ({ ...e, exams: e.exams.filter(j => j.pontuation > 0) }));
-  }
+  const fetchFogoCentral = (examId, level, gun) => {
+    fetchRanking(examId, level, gun, [
+      { field: "results.total", direction: "desc" },
+      { field: "results.pointsCounter.12", direction: "desc" },
+      { field: "results.pointsCounter.10", direction: "desc" },
+      { field: "results.pointsCounter.9", direction: "desc" },
+      { field: "results.pointsCounter.8", direction: "desc" },
+      { field: "results.pointsCounter.7", direction: "desc" },
+      { field: "results.pointsCounter.6", direction: "desc" }
+    ]);
+  };
 
-  const pegaOs8 = a => {
-    const oitoMaioresValores = a.exams
-      .map(exam => exam.pontuation)
-      .sort((a, b) => b - a)
-      .slice(0, 8)
-    const valor = oitoMaioresValores.reduce((acc, valor) => acc + valor, 0)
+  const fetchPercursoCaca = (examId, level, gun) => {
+    fetchRanking(examId, level, null, [
+      { field: "results.total", direction: "desc" }
+    ]);
+  };
 
-    const exams = a.exams.map(exam => ({
-      ...exam,
-      destaque: oitoMaioresValores.includes(exam.pontuation)
-    }));
+  const fetchPercursoCaca20 = (examId, level, gun) => {
+    fetchRanking(examId, level, null, [
+      { field: "results.total", direction: "desc" }
+    ]);
+  };
 
-    return { pontuation: valor, exams: exams }
+  const fetchTrap10 = (examId, level, gun) => {
+    fetchRanking(examId, level, null, [
+      { field: "results.total", direction: "desc" }
+    ]);
+  };
 
-  }
+  const fetchSaquePreciso = (examId, level, gun) => {
+    fetchRanking(examId, level, gun, [
+      { field: "results.total", direction: "desc" },
+      { field: "results.pointsCounter.12", direction: "desc" },
+      { field: "results.pointsCounter.10", direction: "desc" },
+      { field: "results.pointsCounter.9", direction: "desc" },
+      { field: "results.pointsCounter.8", direction: "desc" },
+      { field: "results.pointsCounter.7", direction: "desc" },
+      { field: "results.pointsCounter.6", direction: "desc" }
+    ]);
+  };
+
+  const fetchSM22Apoiado = (examId, level, gun) => {
+
+
+    fetchRanking(examId, level, null, [
+      { field: "results.total", direction: "desc" }
+    ]);
+  };
+
+  const fetchSM22Precisao = (examId, level, gun) => {
+    fetchRanking(examId, level, null, [
+      { field: "results.total", direction: "desc" },
+      { field: "results.pointsCounter.12", direction: "desc" },
+      { field: "results.pointsCounter.10", direction: "desc" },
+      { field: "results.pointsCounter.9", direction: "desc" },
+      { field: "results.pointsCounter.8", direction: "desc" },
+      { field: "results.pointsCounter.7", direction: "desc" },
+      { field: "results.pointsCounter.6", direction: "desc" }
+    ]);
+  };
+
+  const fetchSmallPistol = (examId, level, gun) => {
+    fetchRanking(examId, level, null, [
+      { field: "results.total", direction: "desc" },
+      { field: "results.pointsCounter.12", direction: "desc" },
+      { field: "results.pointsCounter.10", direction: "desc" },
+      { field: "results.pointsCounter.9", direction: "desc" },
+      { field: "results.pointsCounter.8", direction: "desc" },
+      { field: "results.pointsCounter.7", direction: "desc" },
+      { field: "results.pointsCounter.6", direction: "desc" }
+    ]);
+  };
+
+  const fetchTrapAmericano = (examId, level, gun) => {
+    fetchRanking(examId, null, null, [
+      { field: "results.total", direction: "desc" }
+    ]);
+  };
+
+
 
   const returnClass = (position) => {
     if (position === 1) {
@@ -236,46 +234,24 @@ const Live = () => {
     }
   };
 
-  const normalizeArray = (inputArray) => {
-    // Lista de datas desejadas
-    const desiredDates = [
-      '2024-03-03',
-      '2024-04-07',
-    ];
-
-    // Crie um objeto para armazenar os valores do array normalizado
-    const normalizedObj = {};
-
-    // Inicialize o objeto com todas as datas desejadas
-    desiredDates.forEach(date => {
-      normalizedObj[date] = [];
-    });
-
-    // Preencha os valores do array original no objeto normalizado
-    inputArray.forEach(item => {
-      const formattedDate = item.date.split('T')[0];
-      if (desiredDates.includes(formattedDate)) {
-        normalizedObj[formattedDate].push({ date: formattedDate, pontuation: item.pontuation, destaque: item.destaque });
-      }
-    });
-
-    // Converta o objeto normalizado de volta para um array
-    const normalizedArray = desiredDates.reduce((acc, date) => {
-      const pontuations = normalizedObj[date].length > 0 ? normalizedObj[date] : [{ date, pontuation: 0 }];
-      return [...acc, ...pontuations];
-    }, []);
-
-    return normalizedArray;
-  }
-
   return (
     <div className="p-6">
-      <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking Final</h1>
+      <div className="flex flex-row items-center gap-4">
+        <Link to={`/events/2024`}>
+          <button >
+
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+            </svg>
+          </button>
+        </Link>
+        <h1 className="text-gray-700 py-4 font-bold text-xl">Ranking Final</h1>
+      </div>
       <h2 className="text-gray-700 py-4 font-bold text-5xl">{label}</h2>
       <br></br>
       <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
         {ranking.length ? (
-          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+          <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
@@ -286,15 +262,6 @@ const Live = () => {
                 </th>
                 <th scope="col" className="px-6 py-3">
                   Pontuação
-                </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  Mar
-                </th>
-                <th scope="col" className="px-6 py-3 text-center">
-                  Abr
-                </th>
-                <th colSpan={2} scope="col" className="px-6 py-3 text-center">
-                  Mai
                 </th>
               </tr>
             </thead>
@@ -311,20 +278,13 @@ const Live = () => {
                   >
                     {el.name}
                   </td>
-                  <td className="text-gray-900 px-6 py-4">{el.pontuation}</td>
-                  {normalizeArray(el.exams).map((e, j) =>
-                    <td
-                      key={j}
-                      className={`text-gray-900 px-6 py-4 text-center`}
-                    >
-                      {e.pontuation}
-                    </td>
-                  )}
+                  <td className="text-gray-900 px-6 py-4">{el.total} ({el.scores.map((e, i) => `${e}${i == 1 ? '' : '+'}`)})</td>
                 </tr>
               ))}
             </tbody>
           </table>
         ) : null}
+
       </div>
     </div>
   );
