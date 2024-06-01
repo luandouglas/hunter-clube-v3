@@ -118,7 +118,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
     console.log(data);
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
   };
   const fetchFogoCentral = async () => {
     setShowGun(true);
@@ -142,7 +143,9 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
     console.log(data);
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
+    console.log(topTwoScores);
   };
   const fetchPercursoCaca = async () => {
     setShowCategory(true);
@@ -159,7 +162,8 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
   };
 
   const fetchTrap10 = async () => {
@@ -177,7 +181,8 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
   };
 
   const fetchSaquePreciso = async () => {
@@ -202,7 +207,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
   };
   const fetchSM22Apoiado = async () => {
     setShowCategory(true);
@@ -220,7 +226,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
   };
   const fetchSM22Precisao = async () => {
     setShowGun(false);
@@ -243,7 +250,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
   };
   const fetchSmallPistol = async () => {
     setShowGun(false);
@@ -266,7 +274,33 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
+  };
+
+  const findTopTwoScores = (data) => {
+    const topTwoScores = [];
+
+    // Agrupa os resultados pelo nome da pessoa
+    const groupedData = data.reduce((acc, curr) => {
+      const name = curr.name;
+      if (!acc[name]) {
+        acc[name] = [];
+      }
+      acc[name].push(curr.results.total);
+      return acc;
+    }, {});
+
+    // Encontra os dois maiores resultados para cada pessoa e os adiciona ao array de resultados
+    for (const name in groupedData) {
+      const scores = groupedData[name];
+      const sortedScores = scores.sort((a, b) => b - a);
+      const topTwo = sortedScores.slice(0, 2);
+      const total = topTwo.reduce((acc, score) => acc + score, 0);
+      topTwoScores.push({ name, scores: topTwo, total });
+    }
+
+    return topTwoScores.sort((a, b) => b.total - a.total);
   };
   const fetchTrapAmericano = async () => {
     setShowCategory(false);
@@ -280,7 +314,8 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    setRanking(removeDuplicateNames(data));
+    const topTwoScores = findTopTwoScores(data);
+    setRanking(topTwoScores);
   };
   const handleEditResult = async (event) => {
     console.log(event);
@@ -370,17 +405,6 @@ const Ranking = () => {
                 <th scope="col" className="px-6 py-3">
                   Nome
                 </th>
-                {showCategory && (
-                  <th scope="col" className="px-6 py-3">
-                    Categoria
-                  </th>
-                )}
-
-                {showGun == true && (
-                  <th scope="col" className="px-6 py-3">
-                    Armamento
-                  </th>
-                )}
                 <th scope="col" className="px-6 py-3">
                   Pontuação
                 </th>
@@ -400,39 +424,7 @@ const Ranking = () => {
                   >
                     {el.name}
                   </td>
-                  {showCategory && (
-                    <td className="px-6 py-4 text-gray-900">
-                      {el.results.level == "beginner"
-                        ? "Inciante"
-                        : el.results.level == "master"
-                          ? "Master"
-                          : "Super Master"}
-                    </td>
-                  )}
-                  {el.results.gun && (
-                    <td className="px-6 py-4 text-gray-900">
-                      {el.results.gun == "pistol" ? "Pistola" : "Revolver"}
-                    </td>
-                  )}
-                  <td className=" text-gray-900 px-6 py-4">
-                    {el.results.total}
-                  </td>
-                  {/* {event.status !== 'Finalizado' &&
-                    <Link to={`/register/${id}/edit/${el.id}`}>
-                      <button className="bg-blue-gray-500 px-4 py-2 rounded-lg text-white disabled:bg-blue-gray-200 disabled:text-gray-600">
-                        Editar resultado
-                      </button>
-                    </Link>
-                  } */}
-                  {/* {el.exams.map((e, index) => (
-                    <td
-                      className={`text-gray-900 px-6 py-4 ${
-                        index > 1 && "text-center"
-                      }`}
-                    >
-                      {e}
-                    </td>
-                  ))} */}
+                  <td className="text-gray-900 px-6 py-4">{el.total} ({el.scores.map((e, i) => `${e}${i == 1 ? '' : '+'}`)})</td>
                 </tr>
               ))}
             </tbody>

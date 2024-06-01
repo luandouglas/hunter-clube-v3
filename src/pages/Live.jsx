@@ -95,7 +95,6 @@ const Live = () => {
       // Chama a função para encontrar os dois maiores resultados e exibe no console
       const topTwoScores = findTopTwoScores(data);
       setRanking(topTwoScores);
-      console.log(topTwoScores);
     } catch (error) {
       console.error("Error fetching ranking: ", error);
     }
@@ -124,7 +123,7 @@ const Live = () => {
       topTwoScores.push({ name, scores: topTwo, total });
     }
 
-    return topTwoScores;
+    return topTwoScores.sort((a, b) => b.total - a.total);
   };
 
   // Exemplo de uso da função fetchRanking com as provas específicas
