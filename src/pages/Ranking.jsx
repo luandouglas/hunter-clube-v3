@@ -420,7 +420,6 @@ const Ranking = () => {
                   >
                     {el.name}
                   </td>
-                  {el.scores.length}
                   <td className="text-gray-900 px-6 py-4">{el.total} ({el.scores[0]}{el.scores.length > 1 ? `+${el.scores[1]}` : ''})</td>
                 </tr>
               ))}
