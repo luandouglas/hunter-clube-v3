@@ -275,6 +275,7 @@ const Ranking = () => {
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
     const topTwoScores = findTopTwoScores(data);
+    console.log(topTwoScores)
     setRanking(topTwoScores);
   };
 
@@ -419,7 +420,8 @@ const Ranking = () => {
                   >
                     {el.name}
                   </td>
-                  <td className="text-gray-900 px-6 py-4">{el.total} ({el.scores.map((e, i) => `${e}${i == 1 ? '' : '+'}`)})</td>
+                  {el.scores.length}
+                  <td className="text-gray-900 px-6 py-4">{el.total} ({el.scores[0]}{el.scores.length > 1 ? `+${el.scores[1]}` : ''})</td>
                 </tr>
               ))}
             </tbody>
