@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { db } from "../../../firebaseConfig";
 const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [gunType, setGunType] = useState('pistol');
@@ -77,13 +77,12 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   };
 
   const onSubmit = () => {
-    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
 
     onSubmitExam({
       points: scores,
       pointsCounter: repeatedCounts,
       total: totalPoints,
-      level: userLevel,
+      level: classification,
       gun: gunType,
       examId,
       name: shooter,
