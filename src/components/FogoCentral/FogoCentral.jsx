@@ -95,7 +95,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
     setTotalPoints(total);
     if (classification == '') {
-
+      console.log(getClassification(total));
       setClassification(getClassification(total));
     }
     setRepeatedCounts(countPoints(scores));
