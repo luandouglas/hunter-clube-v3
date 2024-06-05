@@ -74,11 +74,11 @@ const Ranking = () => {
       setGuns(find.guns);
       setSelectedGun("pistol");
     }
-
+    console.log(find.levels);
     if (!find?.levels) {
       handleChangeLevel("");
     } else {
-      handleChangeLevel("beginner");
+      handleChangeLevel(find?.levels[0].value);
     }
     setLevels(find?.levels || []);
   };
