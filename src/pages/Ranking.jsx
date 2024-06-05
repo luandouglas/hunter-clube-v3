@@ -157,7 +157,6 @@ const Ranking = () => {
       query(
         collection(db, "exam-results"),
         where("examId", "==", selectedExam),
-        where("results.level", "==", selectedLevel),
         where("eventId", "==", id),
         orderBy("results.total", "desc")
       )
