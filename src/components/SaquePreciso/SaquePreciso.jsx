@@ -30,38 +30,9 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     if (data.length > 0) {
       return { level: data[0].level }
     } else {
-      return getClassification(totalPoints)
+      return { level: getClassification(totalPoints) }
     }
   }
-
-  useEffect(() => {
-    fetchLevel();
-  }, [shooter, fetchLevel]);
-
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
-  };
-
-  const adjustLevel = (object, newDate) => {
-    if (checkLevel(object, newDate)) {
-      return object.level;
-    } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 105) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    } else {
-      if (totalPoints <= 105) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    }
-  };
 
   const handleInputChange = (e, series, index, maxValue = 12) => {
     const value = parseInt(e.target.value);
