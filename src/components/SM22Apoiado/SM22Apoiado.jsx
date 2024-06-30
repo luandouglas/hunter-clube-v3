@@ -75,9 +75,9 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   const getClassification = (total) => {
     if (total <= 27) {
-      return 'master';
+      return 'beginner';
     } else {
-      return 'super-master';
+      return 'master';
     }
   };
 
@@ -91,7 +91,6 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
         points: scores,
         pointsCounter: repeatedCounts,
         total: Number(totalPoints),
-        gun: gunType,
         level,
         examId,
         name: shooter,

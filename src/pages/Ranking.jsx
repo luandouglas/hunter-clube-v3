@@ -120,6 +120,7 @@ const Ranking = () => {
     if (eventDocSnapshot.exists()) {
       const eventData = eventDocSnapshot.data();
       setEvent(eventData);
+
       if (eventData.isDouble) {
         setIsDouble(true)
       } else {

@@ -137,12 +137,12 @@ const exams = [
   {
     levels: [
       {
-        label: "Master",
-        value: "master",
+        label: "Iniciante",
+        value: "beginner",
       },
       {
-        label: "Super Master",
-        value: "super-master",
+        label: "Master",
+        value: "master",
       },
     ],
     iconActive: carbine_dark,
