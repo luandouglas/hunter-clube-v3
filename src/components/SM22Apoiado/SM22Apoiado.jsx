@@ -81,10 +81,6 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
   };
 
-  useEffect(() => {
-    fetchLevel();
-  }, [shooter, fetchLevel]);
-
   const onSubmit = () => {
     fetchLevel().then(({ level }) => {
       onSubmitExam({
