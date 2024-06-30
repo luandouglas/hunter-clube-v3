@@ -13,7 +13,26 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [classification, setClassification] = useState('');
   const [repeatedCounts, setRepeatedCounts] = useState({});
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-  const [level, setLevel] = useState(null);
+
+  const fetchLevel = async () => {
+    if (!shooter || !examId) {
+      return;
+    }
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, "levels-24"),
+        where("name", "==", shooter),
+        where("examId", "==", examId)
+      )
+    );
+    const data = [];
+    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    if (data.length > 0) {
+      return { level: data[0].level }
+    } else {
+      return { level: getClassification(totalPoints) }
+    }
+  }
 
   const handleInputChange = (e, seqIndex, shotIndex) => {
     const { type, checked } = e.target;
@@ -62,63 +81,21 @@ const SM22Apoiado = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
   };
 
-  const fetchLevel = useCallback(async () => {
-    if (!shooter || !examId) {
-      return;
-    }
-    const querySnapshot = await getDocs(
-      query(
-        collection(db, "levels-24"),
-        where("name", "==", shooter),
-        where("examId", "==", examId)
-      )
-    );
-    const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
-    if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS', data[0].level);
-    }
-  }, [shooter, examId]);
-
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
-  };
-
-  const adjustLevel = (object, newDate) => {
-    if (checkLevel(object, newDate)) {
-      return object.level;
-    } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 27) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    } else {
-      if (totalPoints <= 27) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    }
-  };
-
   useEffect(() => {
     fetchLevel();
   }, [shooter, fetchLevel]);
 
   const onSubmit = () => {
-    onSubmitExam({
-      points: scores,
-      pointsCounter: repeatedCounts,
-      total: Number(totalPoints),
-      level: classification,
-      examId,
-      name: shooter,
+    fetchLevel().then(({ level }) => {
+      onSubmitExam({
+        points: scores,
+        pointsCounter: repeatedCounts,
+        total: Number(totalPoints),
+        gun: gunType,
+        level,
+        examId,
+        name: shooter,
+      });
     });
   };
 

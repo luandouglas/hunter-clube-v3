@@ -9,7 +9,7 @@ import shotgun from './assets/shotgun.png';
 
 const exams = [
   {
-    tipo_prova: "Apuração - Carabina Precisão 22 a 25 Metros",
+    tipo_prova: "Carabina Precisão 22 a 25 Metros",
     id: "EfvFedkhOSML884He43N",
     iconActive: carbine_dark,
     icon: carbine,
@@ -63,7 +63,7 @@ const exams = [
     ],
     iconActive: [pistol_dark, revolver_dark],
     icon: [pistol, revolver],
-    tipo_prova: "Apuração de Saque Preciso",
+    tipo_prova: "Saque Preciso",
     id: "KkAF46R6WrwZWq1FNhvX",
   },
   {
@@ -97,7 +97,7 @@ const exams = [
         label: "Revolver",
       },
     ],
-    tipo_prova: "Súmula de Apuração de Fogo Central",
+    tipo_prova: "Fogo Central",
     levels: [
       {
         value: "beginner",
@@ -113,7 +113,7 @@ const exams = [
     id: "YchOCURkmZCTsymgHwG0",
   },
   {
-    tipo_prova: "Apuração de Prova Extra - Small Pistol",
+    tipo_prova: "Small Pistol",
     levels: [
       {
         value: "beginner",

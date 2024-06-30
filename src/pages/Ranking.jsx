@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, orderBy, query, where } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { db } from "../../firebaseConfig";
@@ -18,10 +18,12 @@ const Ranking = () => {
   const [showCategory, setShowCategory] = useState(true);
   const [showGun, setShowGun] = useState(true);
   const [event, setEvent] = useState()
+  const [isDouble, setIsDouble] = useState(false)
   const { id } = useParams();
 
   useEffect(() => {
     fetchEvent()
+    // findDuplicates()
   }, []);
 
   const fetchRanking = async () => {
@@ -36,9 +38,80 @@ const Ranking = () => {
     else if (selectedExam == "q00RXisO4sQqOZ8JfqvW") fetchSM22Apoiado();
     else if (selectedExam == "qnpGZ7u0IW01TZQ4olPn") fetchPercursoCaca();
     else if (selectedExam == "hzTpNUmS4eKFuDHzWQcs") fetchPercursoCaca20();
-
     else if (selectedExam == "3ZHw4gpIuBq477OGGrur") fetchTrap10();
   };
+
+  const findDuplicates = async () => {
+    const levels24Snapshot = await getDocs(collection(db, "levels-24"));
+    const records = {};
+
+    levels24Snapshot.forEach(doc => {
+      const data = doc.data();
+      const key = `${data.name.trim().toLowerCase()}-${data.examId.trim().toLowerCase()}-${data.gun ? data.gun.trim().toLowerCase() : ''}`;
+
+      if (!records[key]) {
+        records[key] = [];
+      }
+      records[key].push(data);
+    });
+
+    const duplicates = Object.values(records).filter(group => group.length > 1);
+    console.log(duplicates);
+    return duplicates;
+  };
+
+  async function mergeLevels() {
+    try {
+      // Buscar documentos nas coleções levels-24 e levels
+      const levels24Snapshot = await getDocs(collection(db, "levels-24"));
+      const levelsSnapshot = await getDocs(collection(db, "levels"));
+
+      const allLevels = [];
+      const duplicates = [];
+      const uniqueLevels = new Map();
+
+      const normalize = (item) => ({
+        name: item.name.trim().toLowerCase(),
+        examId: item.examId.trim().toLowerCase(),
+        gun: item.gun ? item.gun.trim().toLowerCase() : null,
+        level: item.level
+      });
+
+      const addOrUpdateLevel = (level) => {
+        const normalizedLevel = normalize(level);
+        const key = `${normalizedLevel.name}-${normalizedLevel.examId}-${normalizedLevel.gun}-${normalizedLevel.level}`;
+
+        if (uniqueLevels.has(key)) {
+          const existingLevel = uniqueLevels.get(key);
+          existingLevel.rankings = [...existingLevel.rankings, ...level.rankings];
+          duplicates.push({ name: level.name, level: level.level });
+        } else {
+          uniqueLevels.set(key, { ...level, rankings: [...level.rankings] });
+        }
+      };
+
+      // Processar documentos de levels-24
+      levels24Snapshot.forEach(doc => {
+        const data = doc.data();
+        addOrUpdateLevel({ ...data, id: doc.id });
+      });
+
+      // Processar documentos de levels
+      levelsSnapshot.forEach(doc => {
+        const data = doc.data();
+        addOrUpdateLevel({ ...data, id: doc.id });
+      });
+
+      const mergedLevels = Array.from(uniqueLevels.values());
+
+      // console.log("Merged Levels:", mergedLevels);
+      // console.log("Duplicates:", duplicates);
+
+      return { merged: mergedLevels, duplicates: duplicates };
+    } catch (error) {
+      console.error('Erro ao mesclar documentos: ', error);
+    }
+  }
 
   const fetchEvent = async () => {
     const eventDocRef = doc(db, "events", id);
@@ -47,6 +120,90 @@ const Ranking = () => {
     if (eventDocSnapshot.exists()) {
       const eventData = eventDocSnapshot.data();
       setEvent(eventData);
+      if (eventData.isDouble) {
+        setIsDouble(true)
+      } else {
+        setIsDouble(false)
+
+      }
+    }
+  }
+
+  async function findMissingLevels() {
+    try {
+      // Buscar documentos na coleção levels-24
+      const levels24Snapshot = await getDocs(collection(db, "levels-24"));
+      const levels24Names = new Set();
+
+      levels24Snapshot.forEach(doc => {
+        const name = doc.data().name.trimEnd().toLowerCase();
+        levels24Names.add(name);
+      });
+
+      // Buscar documentos na coleção levels
+      const levelsSnapshot = await getDocs(collection(db, "levels"));
+
+      let missingLevels = [];
+      levelsSnapshot.forEach(doc => {
+        const name = doc.data().name.trimEnd().toLowerCase();
+        if (levels24Names.has(name)) {
+          missingLevels.push({ ...doc.data(), id: doc.id });
+        }
+      });
+
+      console.log(missingLevels);
+      return missingLevels;
+    } catch (error) {
+      console.error('Erro ao buscar documentos: ', error);
+    }
+  }
+
+  async function updateLevels() {
+    try {
+      const querySnapshot = await getDocs(
+        query(
+          collection(db, "levels"),
+        )
+      );
+
+      let level = []
+
+      // querySnapshot.forEach((e) => {
+      //   level.push({ ...e.data(), id: e.id });
+      // });
+
+      console.log(level);
+
+      const updatedLevels = level.map(f => ({
+        name: f.name.trimEnd(),
+        examId: f.examId,
+        ...(f.gun && { gun: f.gun }),
+        ...(f.level && { level: f.level }),
+        rankings: [{
+          pontuation: f.pontuation,
+          firstRankingDate: f.firstRankingDate,
+          exams: f.exams,
+          year: '2023'
+        }]
+      }));
+
+      // Deleta cada documento na coleção
+      for (const levelData of level) {
+        const levelDocRef = doc(db, "levels", levelData.id);
+        await deleteDoc(levelDocRef);
+      }
+
+      // console.log('Documentos deletados com sucesso.');
+
+      // // Cria novos documentos com os dados atualizados
+      for (const newLevelData of level) {
+        console.log(newLevelData);
+        await addDoc(collection(db, "levels-new"), newLevelData);
+      }
+
+      console.log('Documentos atualizados com sucesso.');
+    } catch (error) {
+      console.error('Erro ao atualizar documentos: ', error);
     }
   }
 
@@ -61,7 +218,6 @@ const Ranking = () => {
         map.set(person.name, person);
       }
     }
-
     return Array.from(map.values());
   };
   const handleChangeExam = (value) => {
@@ -74,7 +230,6 @@ const Ranking = () => {
       setGuns(find.guns);
       setSelectedGun("pistol");
     }
-    console.log(find.levels);
     if (!find?.levels) {
       handleChangeLevel("");
     } else {
@@ -120,8 +275,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
   const fetchFogoCentral = async () => {
     setShowGun(true);
@@ -145,8 +300,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
 
   };
   const fetchPercursoCaca = async () => {
@@ -163,8 +318,8 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
 
   const fetchPercursoCaca20 = async () => {
@@ -181,8 +336,8 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
 
   const fetchTrap10 = async () => {
@@ -200,8 +355,8 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
 
   const fetchSaquePreciso = async () => {
@@ -226,8 +381,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
   const fetchSM22Apoiado = async () => {
     setShowCategory(true);
@@ -245,8 +400,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
   const fetchSM22Precisao = async () => {
     setShowGun(false);
@@ -269,8 +424,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
   const fetchSmallPistol = async () => {
     setShowGun(false);
@@ -293,9 +448,8 @@ const Ranking = () => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
-    const topTwoScores = findTopTwoScores(data);
-    console.log(topTwoScores)
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
 
   const findTopTwoScores = (data) => {
@@ -334,8 +488,8 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-    const topTwoScores = findTopTwoScores(data);
-    setRanking(topTwoScores);
+    const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
+    setRanking(filteredData);
   };
 
   return (
@@ -439,7 +593,13 @@ const Ranking = () => {
                   >
                     {el.name}
                   </td>
-                  <td className="text-gray-900 px-6 py-4">{el.total} ({el.scores[0]}{el.scores.length > 1 ? `+${el.scores[1]}` : ''})</td>
+                  {
+                    isDouble ?
+                      <td className="text-gray-900 px-6 py-4">{el.total.toFixed(0)} ({el.scores[0].toFixed(0)}{el.scores.length > 1 ? `+${el.scores[1].toFixed(0)}` : ''})</td> :
+                      <td className="text-gray-900 px-6 py-4">{el.results.total.toFixed(0)}</td>
+                  }
+
+
                 </tr>
               ))}
             </tbody>

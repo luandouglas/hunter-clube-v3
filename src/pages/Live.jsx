@@ -1,5 +1,7 @@
 import {
   collection,
+  doc,
+  getDoc,
   getDocs,
   orderBy,
   query,
@@ -7,27 +9,34 @@ import {
 } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { db } from "../../firebaseConfig";
-import { exams } from "../utils";
 import { Link, useParams } from "react-router-dom";
 
 
 
 const Live = () => {
   const [ranking, setRanking] = useState([]);
-
-  const [selectedExam, setSelectedExam] = useState("");
-  const [selectedLevel, setSelectedLevel] = useState();
-  const [selectedGun, setSelectedGun] = useState("");
-
-  const [levels, setLevels] = useState([]);
-  const [guns, setGuns] = useState([]);
-
-  const [canSee, setCanSee] = useState(true);
-  const [showGun, setShowGun] = useState(true)
-
   const [label, setLabel] = useState('')
+  const [isDouble, setIsDouble] = useState(false)
   const { eventId } = useParams()
 
+  useEffect(() => {
+    fetchEvent()
+  }, [eventId])
+
+  const fetchEvent = async () => {
+    const eventDocRef = doc(db, "events", eventId);
+    const eventDocSnapshot = await getDoc(eventDocRef);
+
+    if (eventDocSnapshot.exists()) {
+      const eventData = eventDocSnapshot.data();
+      if (eventData.isDouble) {
+        setIsDouble(true)
+      } else {
+        setIsDouble(false)
+
+      }
+    }
+  }
 
   useEffect(() => {
     const fetchFunctions = [
@@ -93,13 +102,26 @@ const Live = () => {
       querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
 
       // Chama a função para encontrar os dois maiores resultados e exibe no console
-      const topTwoScores = findTopTwoScores(data);
-      setRanking(topTwoScores);
+      const rankingFiltered = isDouble ? removeDuplicateNames(data) : findTopTwoScores(data);
+      setRanking(rankingFiltered);
     } catch (error) {
       console.error("Error fetching ranking: ", error);
     }
   };
 
+  const removeDuplicateNames = (persons) => {
+    const map = new Map();
+
+    for (const person of persons) {
+      if (
+        !map.has(person.name) ||
+        map.get(person.name).results.total < person.results.total
+      ) {
+        map.set(person.name, person);
+      }
+    }
+    return Array.from(map.values());
+  };
 
   const findTopTwoScores = (data) => {
     const topTwoScores = [];
@@ -277,7 +299,11 @@ const Live = () => {
                   >
                     {el.name}
                   </td>
-                  <td className="text-gray-900 px-6 py-4">{el.total} ({el.scores[0]}{el.scores.length > 1 ? `+${el.scores[1]}` : ''})</td>
+                  {isDouble ?
+                    <td className="text-gray-900 px-6 py-4">{el.total.toFixed(0)} ({el.scores[0].toFixed(0)}{el.scores.length > 1 ? `+${el.scores[1].toFixed(0)}` : ''})</td>
+                    : <td className="text-gray-900 px-6 py-4">{el.results.total.toFixed(0)}</td>
+
+                  }
                 </tr>
               ))}
             </tbody>

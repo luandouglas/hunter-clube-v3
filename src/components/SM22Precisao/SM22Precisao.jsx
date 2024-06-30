@@ -78,7 +78,7 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
   };
 
-  const fetchLevel = useCallback(async () => {
+  const fetchLevel = async () => {
     if (!shooter || !examId) {
       return;
     }
@@ -92,11 +92,11 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS', data[0].level);
+      return { level: data[0].level }
+    } else {
+      return { level: getClassification(totalPoints) }
     }
-  }, [shooter]);
+  }
 
   useEffect(() => {
     fetchLevel();
@@ -137,14 +137,17 @@ const SM22Precisao = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       second: scores.second,
       third: scores.third
     };
-    onSubmitExam({
-      points,
-      pointsCounter: repeatedCounts,
-      total: totalPoints,
-      level: classification,
-      examId,
-      name: shooter,
+    fetchLevel().then(({ level }) => {
+      onSubmitExam({
+        points,
+        pointsCounter: repeatedCounts,
+        total: totalPoints,
+        level,
+        examId,
+        name: shooter,
+      });
     });
+
   };
 
   return (

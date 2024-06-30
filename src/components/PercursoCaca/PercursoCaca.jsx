@@ -10,34 +10,6 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     fourth: [false, false, false, false, false],
   });
 
-  const [classification, setClassification] = React.useState("")
-
-  const [level, setLevel] = React.useState();
-  const fetchLevel = useCallback(async () => {
-    if (!shooter || !examId) {
-      return;
-    }
-    const querySnapshot = await getDocs(
-      query(
-        collection(db, "levels-24"),
-        where("name", "==", shooter),
-        where("examId", "==", examId)
-      )
-    );
-    const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
-    if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS', data[0].level)
-    }
-  }, [shooter]);
-
-  useEffect(() => {
-    fetchLevel();
-    // fetchLevel();
-  }, [shooter, fetchLevel]);
-
   const countPoints = (points) => {
     let result = {};
     Object.values(points).forEach(function (array) {
@@ -76,38 +48,11 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     });
   };
 
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
-  };
-
-  const adjustLevel = (object, newDate) => {
-    if (checkLevel(object, newDate)) {
-      return object.level;
-    } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 12) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    } else {
-      if (sumValues() <= 12) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    }
-  };
-
-
   const onSubmit = () => {
     onSubmitExam({
-      points: values,
+      points,
       pointsCounter: countPoints(values),
       total: sumValues(),
-      level: 'master',
       examId,
       name: shooter,
     });

@@ -76,38 +76,11 @@ const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     });
   };
 
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
-  };
-
-  const adjustLevel = (object, newDate) => {
-    if (checkLevel(object, newDate)) {
-      return object.level;
-    } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 12) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    } else {
-      if (sumValues() <= 12) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    }
-  };
-
-
   const onSubmit = () => {
     onSubmitExam({
       points: values,
       pointsCounter: countPoints(values),
       total: sumValues(),
-      level: 'master',
       examId,
       name: shooter,
     });

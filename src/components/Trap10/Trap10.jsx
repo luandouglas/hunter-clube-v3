@@ -4,11 +4,7 @@ import { db } from "../../../firebaseConfig";
 
 const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState();
-
-  const [classification, setClassification] = React.useState("");
-
-  const [level, setLevel] = React.useState();
-  const fetchLevel = useCallback(async () => {
+  const fetchLevel = async () => {
     if (!shooter || !examId) {
       return;
     }
@@ -22,16 +18,11 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS', data[0].level);
+      return { level: data[0].level }
+    } else {
+      return { level: getClassification(totalPoints) }
     }
-
-  }, [shooter]);
-
-  useEffect(() => {
-    fetchLevel();
-  }, [shooter, fetchLevel]);
+  }
 
   const handleValueChange = (newValue, maxValue) => {
 
@@ -52,32 +43,6 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
   };
 
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
-  };
-
-  const adjustLevel = (object, newDate) => {
-    if (checkLevel(object, newDate)) {
-      return object.level;
-    } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 8) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    } else {
-      if (Number(values) <= 8) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    }
-  };
-
-
   const getClassification = (total) => {
     if (total <= 8) {
       return 'beginner';
@@ -87,13 +52,15 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   };
 
   const onSubmit = () => {
-    onSubmitExam({
-      points: Number(values),
-      total: Number(values),
-      level: classification == '' ? getClassification(Number(values)) : classification,
-      pointsCounter: {},
-      examId,
-      name: shooter,
+    fetchLevel().then(({ level }) => {
+      onSubmitExam({
+        points: Number(values),
+        total: Number(values),
+        level,
+        pointsCounter: {},
+        examId,
+        name: shooter,
+      });
     });
   };
 

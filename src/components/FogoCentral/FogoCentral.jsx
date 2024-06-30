@@ -1,5 +1,5 @@
 import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { db } from "../../../firebaseConfig";
 const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [gunType, setGunType] = useState('pistol');
@@ -14,10 +14,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [classification, setClassification] = useState('');
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
 
-  const [gun, setGun] = React.useState("");
-
-  const [level, setLevel] = React.useState();
-  const fetchLevel = useCallback(async () => {
+  const fetchLevel = async () => {
     if (!shooter || !examId) {
       return;
     }
@@ -32,40 +29,11 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS', data[0].level);
-    }
-  }, [shooter, gunType]);
-
-  useEffect(() => {
-    fetchLevel();
-  }, [shooter, fetchLevel]);
-
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
-  };
-
-  const adjustLevel = (object, newDate) => {
-    if (checkLevel(object, newDate)) {
-      return object.level;
-    } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 105) {
-        return "beginner";
-      } else {
-        return "master";
-      }
+      return { level: data[0].level }
     } else {
-      if (totalPoints <= 105) {
-        return "beginner";
-      } else {
-        return "master";
-      }
+      return { level: getClassification(totalPoints) }
     }
-  };
+  }
 
   const handleInputChange = (e, series, index, maxValue = 12) => {
     const value = parseInt(e.target.value);
@@ -77,15 +45,16 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   };
 
   const onSubmit = () => {
-
-    onSubmitExam({
-      points: scores,
-      pointsCounter: repeatedCounts,
-      total: totalPoints,
-      level: classification,
-      gun: gunType,
-      examId,
-      name: shooter,
+    fetchLevel().then(({ level }) => {
+      onSubmitExam({
+        points: scores,
+        pointsCounter: repeatedCounts,
+        total: totalPoints,
+        level,
+        gun: gunType,
+        examId,
+        name: shooter,
+      });
     });
   };
 
@@ -95,7 +64,6 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
     setTotalPoints(total);
     if (classification == '') {
-      console.log(getClassification(total));
       setClassification(getClassification(total));
     }
     setRepeatedCounts(countPoints(scores));

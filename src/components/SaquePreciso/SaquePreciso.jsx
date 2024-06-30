@@ -13,11 +13,7 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [classification, setClassification] = useState('');
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-
-  const [gun, setGun] = React.useState("");
-
-  const [level, setLevel] = React.useState();
-  const fetchLevel = useCallback(async () => {
+  const fetchLevel = async () => {
     if (!shooter || !examId) {
       return;
     }
@@ -32,11 +28,11 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS ', data[0].level);
+      return { level: data[0].level }
+    } else {
+      return getClassification(totalPoints)
     }
-  }, [shooter, gunType]);
+  }
 
   useEffect(() => {
     fetchLevel();
@@ -77,16 +73,17 @@ const SaquePreciso = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   };
 
   const onSubmit = () => {
-    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
 
-    onSubmitExam({
-      points: scores,
-      pointsCounter: repeatedCounts,
-      total: totalPoints,
-      level: classification,
-      gun: gunType,
-      examId,
-      name: shooter,
+    fetchLevel().then(({ level }) => {
+      onSubmitExam({
+        points: scores,
+        pointsCounter: repeatedCounts,
+        total: totalPoints,
+        gun: gunType,
+        level,
+        examId,
+        name: shooter,
+      });
     });
   };
 

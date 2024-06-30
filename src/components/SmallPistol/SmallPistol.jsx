@@ -10,11 +10,7 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [totalPoints, setTotalPoints] = useState(0);
   const [classification, setClassification] = useState('');
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
-
-  const [gun, setGun] = React.useState("");
-
-  const [level, setLevel] = React.useState();
-  const fetchLevel = useCallback(async () => {
+  const fetchLevel = async () => {
     if (!shooter || !examId) {
       return;
     }
@@ -29,44 +25,11 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     querySnapshot.docs.forEach((el) => data.push(el.data()));
 
     if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS', data[0].level);
+      return { level: data[0].level }
     } else {
-      console.log('THE SHOOTER NOT HAS LEVEL');
-
-      setClassification("")
+      return { level: getClassification(totalPoints) }
     }
-  }, [shooter]);
-
-  useEffect(() => {
-    fetchLevel();
-  }, [shooter, fetchLevel]);
-
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
-  };
-
-  const adjustLevel = (object, newDate) => {
-    if (checkLevel(object, newDate)) {
-      return object.level;
-    } else if (object && object.level && object.firstRankingDate === newDate) {
-      if (object.pontuation <= 85) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    } else {
-      if (totalPoints <= 85) {
-        return "beginner";
-      } else {
-        return "master";
-      }
-    }
-  };
+  }
 
   const handleInputChange = (e, series, index, maxValue = 12) => {
     const value = parseInt(e.target.value);
@@ -78,14 +41,15 @@ const SmallPistol = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   };
 
   const onSubmit = () => {
-    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
-    onSubmitExam({
-      points: scores,
-      pointsCounter: repeatedCounts,
-      total: totalPoints,
-      level: userLevel,
-      examId,
-      name: shooter,
+    fetchLevel().then(({ level }) => {
+      onSubmitExam({
+        points: scores,
+        pointsCounter: repeatedCounts,
+        total: totalPoints,
+        level,
+        examId,
+        name: shooter,
+      });
     });
   };
 

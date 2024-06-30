@@ -111,68 +111,68 @@ const Register = () => {
     try {
       const docRef = await addDoc(collection(db, "exam-results"), data);
 
-      if (docRef) {
-        if (result.gun) {
-          const querySnapshot = await getDocs(
-            query(
-              collection(db, "levels-24"),
-              where("examId", "==", result.examId),
-              where("name", "==", result.name),
-              where("gun", "==", result.gun)
-            )
-          );
-          const level = [];
-          querySnapshot.forEach((e) => {
-            level.push({ ...e.data(), id: e.id });
-          });
+      // if (docRef) {
+      //   if (result.gun) {
+      //     const querySnapshot = await getDocs(
+      //       query(
+      //         collection(db, "levels-24"),
+      //         where("examId", "==", result.examId),
+      //         where("name", "==", result.name),
+      //         where("gun", "==", result.gun)
+      //       )
+      //     );
+      //     const level = [];
+      //     querySnapshot.forEach((e) => {
+      //       level.push({ ...e.data(), id: e.id });
+      //     });
 
-          if (level.length > 0) {
-            const levelsCollection = collection(db, "levels-24");
-            let aux = addOrUpdateExam(level[0], data, event.date);
+      //     if (level.length > 0) {
+      //       const levelsCollection = collection(db, "levels-24");
+      //       let aux = addOrUpdateExam(level[0], data, event.date);
 
-            const q = await doc(levelsCollection, aux.id);
-            const querySnapshot = await getDoc(q);
+      //       const q = await doc(levelsCollection, aux.id);
+      //       const querySnapshot = await getDoc(q);
 
-            await updateDoc(querySnapshot.ref, aux);
-          } else {
-            let newLevel = createLevel(data);
+      //       await updateDoc(querySnapshot.ref, aux);
+      //     } else {
+      //       let newLevel = createLevel(data);
 
-            await addDoc(collection(db, "levels-24"), newLevel);
-          }
-        } else {
-          const querySnapshot = await getDocs(
-            query(
-              collection(db, "levels-24"),
-              where("examId", "==", result.examId),
-              where("name", "==", result.name)
-            )
-          );
-          console.log(event, result.examId, result.name);
-          const level = [];
-          querySnapshot.forEach((e) => {
-            level.push({ ...e.data(), id: e.id });
-          });
+      //       await addDoc(collection(db, "levels-24"), newLevel);
+      //     }
+      //   } else {
+      //     const querySnapshot = await getDocs(
+      //       query(
+      //         collection(db, "levels-24"),
+      //         where("examId", "==", result.examId),
+      //         where("name", "==", result.name)
+      //       )
+      //     );
+      //     console.log(event, result.examId, result.name);
+      //     const level = [];
+      //     querySnapshot.forEach((e) => {
+      //       level.push({ ...e.data(), id: e.id });
+      //     });
 
-          if (level.length > 0) {
-            let aux = addOrUpdateExam(level[0], data, event.date);
-            const levelsCollection = collection(db, "levels-24");
-            const q = await doc(levelsCollection, aux.id);
-            const querySnapshot = await getDoc(q);
+      //     if (level.length > 0) {
+      //       let aux = addOrUpdateExam(level[0], data, event.date);
+      //       const levelsCollection = collection(db, "levels-24");
+      //       const q = await doc(levelsCollection, aux.id);
+      //       const querySnapshot = await getDoc(q);
 
-            await updateDoc(querySnapshot.ref, aux);
-          } else {
-            let newLevel = createLevel(data);
-            console.log(newLevel);
+      //       await updateDoc(querySnapshot.ref, aux);
+      //     } else {
+      //       let newLevel = createLevel(data);
+      //       console.log(newLevel);
 
-            await addDoc(collection(db, "levels-24"), newLevel);
-          }
-        }
+      //       await addDoc(collection(db, "levels-24"), newLevel);
+      //     }
+      //   }
 
-        setShowToast(true);
-        setTimeout(() => {
-          setShowToast(false);
-        }, 1000);
-      }
+      //   setShowToast(true);
+      //   setTimeout(() => {
+      //     setShowToast(false);
+      //   }, 1000);
+      // }
     } catch (error) {
 
     }
@@ -230,6 +230,10 @@ const Register = () => {
     }
     return temp;
   };
+
+  const returnLevel = (level) => level === 'beginner' ? 'Iniciante' : level === 'master' ? 'Master' : 'Super Master'
+
+
   return (
     <Layout>
       <h1 className="text-gray-700 py-4 font-bold text-xl">
@@ -483,25 +487,29 @@ const Register = () => {
                 <Dialog.Panel className="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
-                      <div className="mx-auto flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                        {/* <ExclamationTriangleIcon
-                          className="h-6 w-6 text-green-600"
-                          aria-hidden="true"
-                        /> */}
-                      </div>
                       <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
                         <Dialog.Title
-                          as="h3"
-                          className="text-base font-semibold leading-6 text-gray-900"
+                          className="text-xl font-semibold leading-6 text-black"
                         >
                           Salvar Resultado
                         </Dialog.Title>
                         <div className="mt-2">
-                          <p className="text-sm text-gray-500">
-                            Você tem certeza de que deseja salvar o resultado?
-                            Uma vez salvo, não será possível corrigi-lo. Por
-                            favor, verifique o resultado antes de prosseguir.
-                          </p>
+                          {result &&
+                            <p>
+                              Você tem certeza de que deseja salvar o resultado? Uma vez salvo, não será possível corrigi-lo.
+                              Por favor, verifique o resultado antes de prosseguir.
+                              <br />
+                              <br />
+                              <span className="font-bold">Nome: {result.name}</span>
+                              <br />
+                              <span className="font-bold">Pontuação: {result.total}</span>
+                              <br />
+                              <span className="font-bold">Nível: {returnLevel(result.level)}</span>
+                              <br />
+                              <br />
+                              Se houver algum erro, por favor, contate um administrador.
+                            </p>
+                          }
                         </div>
                       </div>
                     </div>

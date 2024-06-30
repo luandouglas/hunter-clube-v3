@@ -10,6 +10,26 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [level, setLevel] = useState(null);
 
+  const fetchLevel = async () => {
+    if (!shooter || !examId) {
+      return;
+    }
+    const querySnapshot = await getDocs(
+      query(
+        collection(db, "levels-24"),
+        where("name", "==", shooter),
+        where("examId", "==", examId)
+      )
+    );
+    const data = [];
+    querySnapshot.docs.forEach((el) => data.push(el.data()));
+    if (data.length > 0) {
+      return { level: data[0].level }
+    } else {
+      return { level: getClassification(totalPoints) }
+    }
+  }
+
   const handleInputChange = (e, seqIndex, shotIndex) => {
     const value = parseInt(e.target.value);
     const newValue = (value > 12) ? 12 : (value < 0) ? 0 : value; // Enforcing value range between 0 and 12
@@ -28,13 +48,15 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     setTotalPoints(total);
     if (classification == '') {
 
-      setClassification(total <= 140 ? 'beginner' : 'master');
+      setClassification(getClassification(total));
     }
 
     setRepeatedCounts(countPoints(scores));
 
     setIsSubmitDisabled(false); // Enable submit button after calculating total points
   };
+
+  const getClassification = (total) => total <= 140 ? 'beginner' : 'master'
 
   const countPoints = (points) => {
     const result = {};
@@ -54,25 +76,7 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     return result;
   };
 
-  const fetchLevel = useCallback(async () => {
-    if (!shooter || !examId) {
-      return;
-    }
-    const querySnapshot = await getDocs(
-      query(
-        collection(db, "levels-24"),
-        where("name", "==", shooter),
-        where("examId", "==", examId)
-      )
-    );
-    const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
-    if (data.length > 0) {
-      setLevel(data[0]);
-      setClassification(data[0].level)
-      console.log('THE SHOOTER IS', data[0].level)
-    }
-  }, [shooter, examId]);
+
 
   const checkLevel = (object, newDate) => {
     if (object && object.level && object.firstRankingDate !== newDate) {
@@ -110,15 +114,17 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
       third: scores[2],
     };
 
-    const userLevel = level ? adjustLevel(level, dateEvent) : classification;
-    onSubmitExam({
-      points,
-      pointsCounter: repeatedCounts,
-      total: totalPoints,
-      level: userLevel,
-      examId,
-      name: shooter,
+    fetchLevel().then(({ level }) => {
+      onSubmitExam({
+        points,
+        pointsCounter: repeatedCounts,
+        total: totalPoints,
+        level,
+        examId,
+        name: shooter,
+      });
     });
+
   };
 
   return (

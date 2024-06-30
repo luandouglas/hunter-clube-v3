@@ -4,34 +4,6 @@ import { db } from "../../../firebaseConfig";
 
 const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState();
-
-  const [gun, setGun] = React.useState("");
-
-  const [level, setLevel] = React.useState();
-  const fetchLevel = useCallback(async () => {
-    if (!shooter || !examId) {
-      return;
-    }
-    const querySnapshot = await getDocs(
-      query(
-        collection(db, "levels-24"),
-        where("name", "==", shooter),
-        where("examId", "==", examId)
-      )
-    );
-    const data = [];
-    querySnapshot.docs.forEach((el) => data.push(el.data()));
-    if (data.length > 0) {
-      setLevel(data[0]);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchLevel();
-    // fetchLevel();
-  }, [shooter, fetchLevel]);
-
-
   const handleValueChange = (newValue, maxValue) => {
 
     const regex = /^-?\d*\.?\d*$/;
@@ -49,13 +21,6 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
         setValues(newValue); // Permite a entrada parcial como '0.'
       }
     }
-  };
-
-  const checkLevel = (object, newDate) => {
-    if (object && object.level && object.firstRankingDate !== newDate) {
-      return true;
-    }
-    return false;
   };
 
   const onSubmit = () => {
