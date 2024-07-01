@@ -504,7 +504,9 @@ const Register = () => {
                               <br />
                               <span className="font-bold">Pontuação: {result.total}</span>
                               <br />
-                              <span className="font-bold">Nível: {returnLevel(result.level)}</span>
+                              {result.level &&
+                                <span className="font-bold">Nível: {returnLevel(result.level)}</span>
+                              }
                               <br />
                               <br />
                               Se houver algum erro, por favor, contate um administrador.
