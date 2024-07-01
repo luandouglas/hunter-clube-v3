@@ -1,6 +1,4 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useCallback, useEffect } from "react";
-import { db } from "../../../firebaseConfig";
+import React from "react";
 
 const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [values, setValues] = React.useState({
@@ -50,7 +48,7 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   const onSubmit = () => {
     onSubmitExam({
-      points,
+      points: values,
       pointsCounter: countPoints(values),
       total: sumValues(),
       examId,
