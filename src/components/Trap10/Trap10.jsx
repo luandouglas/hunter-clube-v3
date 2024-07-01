@@ -20,7 +20,7 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     if (data.length > 0) {
       return { level: data[0].level }
     } else {
-      return { level: getClassification(totalPoints) }
+      return { level: getClassification(values) }
     }
   }
 
@@ -53,7 +53,7 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   const onSubmit = () => {
     fetchLevel().then(({ level }) => {
-      onSubmitExam({
+      console.log({
         points: Number(values),
         total: Number(values),
         level,
@@ -61,6 +61,14 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
         examId,
         name: shooter,
       });
+      // onSubmitExam({
+      //   points: Number(values),
+      //   total: Number(values),
+      //   level,
+      //   pointsCounter: {},
+      //   examId,
+      //   name: shooter,
+      // });
     });
   };
 
