@@ -400,7 +400,7 @@ const Ranking = () => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push({ ...el.data(), id: el.id }));
-
+    console.log(data);
     const filteredData = isDouble ? findTopTwoScores(data) : removeDuplicateNames(data);
     setRanking(filteredData);
   };
@@ -597,7 +597,7 @@ const Ranking = () => {
                   {
                     isDouble ?
                       <td className="text-gray-900 px-6 py-4">{el.total.toFixed(0)} ({el.scores[0].toFixed(0)}{el.scores.length > 1 ? `+${el.scores[1].toFixed(0)}` : ''})</td> :
-                      <td className="text-gray-900 px-6 py-4">{el.results.total.toFixed(0)}</td>
+                      <td className="text-gray-900 px-6 py-4">{el.results.total}</td>
                   }
 
 

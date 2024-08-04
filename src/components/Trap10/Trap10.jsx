@@ -17,6 +17,7 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
+    console.log(data[0]);
     if (data.length > 0) {
       return { level: data[0].level }
     } else {
