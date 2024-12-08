@@ -24,6 +24,8 @@ const Championship = () => {
   const [selectedExam, setSelectedExam] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState(null);
   const [selectedGun, setSelectedGun] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   const fetchEvent = async () => {
     const eventDocRef = doc(db, "events", eventId);
@@ -376,6 +378,8 @@ const Championship = () => {
   };
 
   const handleClickUpdateExamFinal = async () => {
+    setLoading(true);
+    setProgress(0);
     const auxDoc = [];
     const eventIds = [
       "4ifsjKd75BGccjCD8NhQ",
@@ -395,7 +399,7 @@ const Championship = () => {
     );
 
     aux.docs.forEach((el) => auxDoc.push(el.data()));
-
+    setProgress(25);
     const groupedData = auxDoc.reduce((acc, item) => {
       const { name, examId, results, eventId } = item;
       const gun = results.gun || null; // Garante valor null se gun não existir
@@ -431,11 +435,16 @@ const Championship = () => {
 
       return acc;
     }, []);
-
+    setProgress(50);
     const sortedData = groupedData.sort((a, b) => a.name.localeCompare(b.name));
 
     await deleteCollection("final-results");
+    setProgress(75);
     await saveCollection(sortedData);
+    setProgress(100);
+    setTimeout(() => {
+      setLoading(false);
+    }, 1000);
   };
 
   const deleteCollection = async (collectionName) => {
@@ -479,6 +488,24 @@ const Championship = () => {
   };
   return (
     <Layout>
+      {loading && (
+        <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+          <div className="flex flex-col items-center">
+            {/* Animação do Spinner */}
+            <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent border-solid rounded-full animate-spin"></div>
+
+            {/* Texto do progresso */}
+            <div className="absolute text-white text-lg font-bold mt-20">
+              {progress}%
+            </div>
+
+            {/* Mensagem de feedback */}
+            <p className="mt-4 text-white text-sm pt-8 font-medium">
+              Atualizando, por favor aguarde...
+            </p>
+          </div>
+        </div>
+      )}
       <div className="p-6">
         {/* <button onClick={() => addExamResult()}>ADICI</button> */}
         <div className="flex justify-between row">
@@ -486,6 +513,7 @@ const Championship = () => {
             Selecione a prova
           </div>
           <button
+            disabled={loading}
             onClick={() => handleClickUpdateExamFinal()}
             className="flex row items-center gap-3"
           >
