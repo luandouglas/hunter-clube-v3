@@ -16,6 +16,7 @@ import Ranking from "./pages/Ranking";
 import Register from "./pages/Register";
 import UserNew from "./pages/UserNew";
 import Users from "./pages/Users";
+import Championship from "./pages/Championship";
 
 const router = createHashRouter(
   createRoutesFromElements(
@@ -25,6 +26,7 @@ const router = createHashRouter(
       <Route path="/geral" element={<Geral />} />
       <Route path="/live/:eventId" element={<Live />} />
       <Route path="events" element={<Events />} />
+      <Route path="championship" element={<Championship />} />
       <Route path="events/:year" element={<EventsYear />} />
       <Route path="register/:id" element={<Register />} />
       <Route path="register/:eventId/edit/:id" element={<Edit />} />
