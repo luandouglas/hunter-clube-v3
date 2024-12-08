@@ -222,7 +222,6 @@ const Championship = () => {
 
       // Chama a função para encontrar os dois maiores resultados e exibe no console
       const rankingFiltered = removeDuplicateNames(data);
-      console.log(rankingFiltered.sort((a, b) => b.total - a.total));
 
       setRanking(rankingFiltered.sort((a, b) => b.total - a.total));
     } catch (error) {
@@ -260,16 +259,16 @@ const Championship = () => {
       // Seleciona as 8 maiores pontuações
       const top8Results = sortedResults.slice(0, 8);
 
-      // Calcula o total das 8 maiores pontuações
+      // // Calcula o total das 8 maiores pontuações
       const newTotal = top8Results.reduce(
-        (sum, result) => sum + result.total,
+        (sum, result) => sum + Number(result.total),
         0
       );
 
       // Retorna o mesmo item com resultados filtrados e total atualizado
       return {
         ...item,
-        results: top8Results,
+        results: sortedResults,
         total: newTotal,
       };
     });
@@ -371,6 +370,8 @@ const Championship = () => {
       case "hzTpNUmS4eKFuDHzWQcs":
         fetchPercursoCaca20(examdId, level, "");
         break;
+      case "3ZHw4gpIuBq477OGGrur":
+        fetchTrap10(examdId, level, "");
     }
   };
 
@@ -457,9 +458,29 @@ const Championship = () => {
     });
   };
 
+  const addExamResult = async () => {
+    const object = {
+      examId: "qnpGZ7u0IW01TZQ4olPn",
+      eventId: "tthUAeu0OHe59QAOIyyg",
+      name: "JOSÉ ARI DE ALMEIDA CASTRO FILHO",
+      results: {
+        level: "master",
+        total: 5,
+      },
+    };
+    await addDoc(collection(db, "exam-results"), object);
+  };
+
+  const fetchResultMonth = (results, date) => {
+    const resultMonths = results.filter((e) => e.event.date === date);
+    return resultMonths.length > 0
+      ? resultMonths.map((e) => Number(e.total).toFixed(0))
+      : ["-"];
+  };
   return (
     <Layout>
       <div className="p-6">
+        {/* <button onClick={() => addExamResult()}>ADICI</button> */}
         <div className="flex justify-between row">
           <div className="text-gray-700 py-4 font-bold text-xl">
             Selecione a prova
@@ -570,7 +591,6 @@ const Championship = () => {
                   onClick={() => {
                     fetchExam(selectedExam.id, selectedLevel, selectedGun);
                   }}
-                  disabled={!selectedLevel && !selectedGun} // Desabilita o botão se nada estiver selecionado
                 >
                   Confirmar
                 </button>
@@ -594,6 +614,36 @@ const Championship = () => {
                   <th scope="col" className="px-6 py-3">
                     Pontuação
                   </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Mar
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Abr
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Mai
+                  </th>
+                  <th colSpan={2} scope="col" className="px-6 py-3 text-center">
+                    Jun
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Jul
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Ago
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Set
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Out
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Nov
+                  </th>
+                  <th scope="col" className="px-6 py-3 text-center">
+                    Dez
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -609,8 +659,42 @@ const Championship = () => {
                     >
                       {el.name}
                     </td>
-                    <td className="text-gray-900 px-6 py-4">
+                    <td className="text-gray-900 px-6 py-4 text-center">
                       {Number(el.total.toFixed(0))}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-03-03")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-04-07")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-05-05")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-06-01")[0]}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-06-01")[1]}
+                    </td>
+
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-06-30")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-08-04")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-09-08")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-10-13")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-11-10")}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {fetchResultMonth(el.results, "2024-12-08")}
                     </td>
                   </tr>
                 ))}
