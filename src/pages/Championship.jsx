@@ -5,7 +5,6 @@ import {
   doc,
   getDoc,
   getDocs,
-  getFirestore,
   orderBy,
   query,
   where,
@@ -18,6 +17,8 @@ import { exams } from "../utils";
 
 const Championship = () => {
   const [ranking, setRanking] = useState([]);
+  const [rankingUpdate, setRankingUpdate] = useState([]);
+
   const [label, setLabel] = useState("");
   const [isDouble, setIsDouble] = useState(false);
   const [examList, setExamList] = useState(exams);
@@ -26,6 +27,7 @@ const Championship = () => {
   const [selectedGun, setSelectedGun] = useState(null);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [updateLevel, setUpdateLevel] = useState(false);
 
   const fetchEvent = async () => {
     const eventDocRef = doc(db, "events", eventId);
@@ -344,6 +346,7 @@ const Championship = () => {
   };
 
   const fetchExam = (examdId, level, gun) => {
+    setUpdateLevel(false)
     switch (examdId) {
       case "KkAF46R6WrwZWq1FNhvX":
         fetchSaquePreciso(examdId, level, gun);
@@ -480,6 +483,76 @@ const Championship = () => {
     await addDoc(collection(db, "exam-results"), object);
   };
 
+  const checkNewRank = () => {
+    setUpdateLevel(true)
+    setRankingUpdate([])
+    const update = ranking
+      .map(({ name, examId, results, level }) => {
+        const prova = exams.find(prova => prova.id === examId);
+        if (!prova) return { examId, tipo_prova: "Desconhecido", status: "Prova não encontrada" };
+
+        const totais = results.map(result => result.total);
+
+        if (!prova.levels || prova.levels.length === 0) {
+          return { name, examId, tipo_prova: prova.tipo_prova, status: "Sem níveis definidos" };
+        }
+
+        // Ordenar níveis por pontos
+        const niveisOrdenados = [...prova.levels].sort((a, b) => a.points - b.points);
+
+        // Encontrar o nível atual baseado na string vinda de ranking.level
+        const nivelAtual = niveisOrdenados.find(nivel => nivel.value === level) || niveisOrdenados[0];
+
+        // Determinar o novo nível baseado na melhor pontuação do participante
+        const melhorPontuacao = Math.max(...totais);
+        let novoNivel = nivelAtual;
+
+        for (const nivel of niveisOrdenados) {
+          if (melhorPontuacao >= nivel.points) {
+            novoNivel = nivel;
+          }
+        }
+
+        // Verificar se deve subir ou descer de rank
+        let status = null;
+        let destaque = [];
+
+        if (novoNivel.value !== nivelAtual.value) {
+          if (melhorPontuacao >= novoNivel.points) {
+            status = "Subir de rank";
+            destaque = results.filter(result => result.total >= novoNivel.points);
+          } else if (Math.min(...totais) < nivelAtual.points) {
+            status = "Descer de rank";
+            destaque = results.filter(result => result.total < nivelAtual.points);
+          }
+        }
+
+        if (!status) return null; // Ignora os que permanecem no mesmo rank
+
+        const resultado = {
+          name,
+          examId,
+          tipo_prova: prova.tipo_prova,
+          status,
+          nivel_atual: nivelAtual.label,
+          novo_nivel: novoNivel.label,
+          destaque
+        };
+
+        console.log(resultado);
+        return resultado;
+      })
+      .filter(item => item !== null); // Remove os que não mudaram de rank
+    setRankingUpdate(update)
+    console.log(update);
+
+  };
+
+  const formatDate = (dateString) => {
+    const [year, month, day] = dateString.split('-'); // Separar a data no formato YYYY-MM-DD
+    return `${day}/${month}/${year}`; // Retorna no formato DD/MM/YYYY
+  };
+
   const fetchResultMonth = (results, date) => {
     const resultMonths = results.filter((e) => e.event.date === date);
     return resultMonths.length > 0
@@ -512,30 +585,42 @@ const Championship = () => {
           <div className="text-gray-700 py-4 font-bold text-xl">
             Selecione a prova
           </div>
-          <button
-            disabled={loading}
-            onClick={() => handleClickUpdateExamFinal()}
-            className="flex row items-center gap-3"
-          >
-            <div className="text-gray-700 py-4 font-bold text-xl">
-              Atualizar resultados
-            </div>
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              fill="#1b4f3f"
-              height="24px"
-              width="24px"
-              version="1.1"
-              id="Capa_1"
-              viewBox="0 0 489.645 489.645"
-              xml:space="preserve"
+          <div className="flex row gap-3 items-center">
+            <button
+              disabled={loading}
+              onClick={() => checkNewRank()}
+              className="flex row items-center gap-3"
             >
-              <g>
-                <path d="M460.656,132.911c-58.7-122.1-212.2-166.5-331.8-104.1c-9.4,5.2-13.5,16.6-8.3,27c5.2,9.4,16.6,13.5,27,8.3   c99.9-52,227.4-14.9,276.7,86.3c65.4,134.3-19,236.7-87.4,274.6c-93.1,51.7-211.2,17.4-267.6-70.7l69.3,14.5   c10.4,2.1,21.8-4.2,23.9-15.6c2.1-10.4-4.2-21.8-15.6-23.9l-122.8-25c-20.6-2-25,16.6-23.9,22.9l15.6,123.8   c1,10.4,9.4,17.7,19.8,17.7c12.8,0,20.8-12.5,19.8-23.9l-6-50.5c57.4,70.8,170.3,131.2,307.4,68.2   C414.856,432.511,548.256,314.811,460.656,132.911z" />
-              </g>
-            </svg>
-          </button>
+              <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="#000000" height="24px" width="24px" version="1.1" id="Capa_1" viewBox="0 0 214.943 214.943" xml:space="preserve">
+                <g>
+                  <path d="M187.693,46.993l-31.102-15.889L140.7,0l-33.229,10.758L74.242,0L58.354,31.104L27.25,46.993l10.758,33.228l-10.757,33.23   l31.102,15.889l4.247,8.314v77.288l44.875-22.431l44.868,22.432v-77.29l4.247-8.313l31.102-15.889l-10.757-33.23L187.693,46.993z    M107.476,175.742l-29.875,14.933v-31.317l29.871-9.67l29.872,9.671v31.316L107.476,175.742z M145.443,118.192l-12.283,24.045   l-25.688-8.316l-25.686,8.316l-12.283-24.045l-24.044-12.283l8.316-25.688l-8.314-25.686l24.043-12.283l12.283-24.044l25.686,8.316   l25.688-8.316l12.283,24.044l24.042,12.283l-8.314,25.686l8.316,25.688L145.443,118.192z" />
+                  <path d="M107.475,39.09c-22.683,0-41.137,18.451-41.137,41.13c0,22.684,18.454,41.139,41.137,41.139   c22.68,0,41.132-18.455,41.132-41.139C148.607,57.542,130.155,39.09,107.475,39.09z M107.475,106.359   c-14.412,0-26.137-11.726-26.137-26.139c0-14.408,11.725-26.13,26.137-26.13c14.409,0,26.132,11.722,26.132,26.13   C133.607,94.634,121.884,106.359,107.475,106.359z" />
+                </g>
+              </svg>
+            </button>
+            <button
+              disabled={loading}
+              onClick={() => handleClickUpdateExamFinal()}
+              className="flex row items-center gap-3"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="#1b4f3f"
+                height="24px"
+                width="24px"
+                version="1.1"
+                id="Capa_1"
+                viewBox="0 0 489.645 489.645"
+              >
+                <g>
+                  <path d="M460.656,132.911c-58.7-122.1-212.2-166.5-331.8-104.1c-9.4,5.2-13.5,16.6-8.3,27c5.2,9.4,16.6,13.5,27,8.3   c99.9-52,227.4-14.9,276.7,86.3c65.4,134.3-19,236.7-87.4,274.6c-93.1,51.7-211.2,17.4-267.6-70.7l69.3,14.5   c10.4,2.1,21.8-4.2,23.9-15.6c2.1-10.4-4.2-21.8-15.6-23.9l-122.8-25c-20.6-2-25,16.6-23.9,22.9l15.6,123.8   c1,10.4,9.4,17.7,19.8,17.7c12.8,0,20.8-12.5,19.8-23.9l-6-50.5c57.4,70.8,170.3,131.2,307.4,68.2   C414.856,432.511,548.256,314.811,460.656,132.911z" />
+                </g>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div>
+
         </div>
         <div className="p-4 space-y-4 relative">
           {/* Botões das provas */}
@@ -544,11 +629,10 @@ const Championship = () => {
               <button
                 key={exam.id}
                 className={`px-4 py-2 rounded-lg border text-sm font-medium
-              ${
-                selectedExam?.id === exam.id
-                  ? "bg-blue-500 text-white border-blue-500"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
-              }
+              ${selectedExam?.id === exam.id
+                    ? "bg-blue-500 text-white border-blue-500"
+                    : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+                  }
               transition duration-300`}
                 onClick={() => handleSelectExam(exam)}
               >
@@ -574,11 +658,10 @@ const Championship = () => {
                     {selectedExam.levels.map((level, index) => (
                       <button
                         key={index}
-                        className={`px-3 py-2 rounded-lg transition ${
-                          selectedLevel === level.value
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                        }`}
+                        className={`px-3 py-2 rounded-lg transition ${selectedLevel === level.value
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                          }`}
                         onClick={() => handleSelectLevel(level.value)}
                       >
                         {level.label}
@@ -598,11 +681,10 @@ const Championship = () => {
                     {selectedExam.guns.map((gun, index) => (
                       <button
                         key={index}
-                        className={`px-3 py-2 rounded-lg transition ${
-                          selectedGun === gun.value
-                            ? "bg-blue-500 text-white"
-                            : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-                        }`}
+                        className={`px-3 py-2 rounded-lg transition ${selectedGun === gun.value
+                          ? "bg-blue-500 text-white"
+                          : "bg-gray-200 text-gray-800 hover:bg-gray-300"
+                          }`}
                         onClick={() => handleSelectGun(gun.value)}
                       >
                         {gun.label}
@@ -629,7 +711,52 @@ const Championship = () => {
         <h2 className="text-gray-700 py-4 font-bold text-5xl">{label}</h2>
         <br></br>
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-          {ranking.length ? (
+          {updateLevel === true ? (
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+                <tr>
+                  <th scope="col" className="px-6 py-3">Pos.</th>
+                  <th scope="col" className="px-6 py-3">Nome</th>
+                  <th scope="col" className="px-6 py-3 text-center">Ranking atual</th>
+                  <th scope="col" className="px-6 py-3 text-center">Ranking novo</th>
+                  <th scope="col" className="px-6 py-3 text-center">Destaque</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rankingUpdate.map((el, index) => (
+                  <tr key={index} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                    <td className={returnClass(index + 1)}>{index + 1}</td>
+                    <td scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+                      {el.name}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {el.nivel_atual}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {el.novo_nivel}
+                    </td>
+                    <td className="text-gray-900 px-6 py-4 text-center">
+                      {/* Exibindo os destaques */}
+                      {el.destaque && el.destaque.length > 0 ? (
+                        <div>
+                          {el.destaque.map((d, idx) => (
+                            <div key={idx} className="text-sm">
+                              <strong>{d.event.name} ({formatDate(d.event.date)})</strong> - {d.total} pontos
+                              <br />
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">Sem destaque</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : null}
+
+          {ranking.length && updateLevel === false ? (
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
               <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                 <tr>

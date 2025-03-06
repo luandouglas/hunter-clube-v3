@@ -17,10 +17,12 @@ const exams = [
       {
         value: "beginner",
         label: "Iniciante",
+        points: 0
       },
       {
         label: "Master",
         value: "master",
+        points: 141
       },
     ],
   },
@@ -33,10 +35,12 @@ const exams = [
       {
         value: "beginner",
         label: "Iniciante",
+        points: 0
       },
       {
         label: "Master",
         value: "master",
+        points: 9
       },
     ],
   },
@@ -55,10 +59,12 @@ const exams = [
       {
         value: "beginner",
         label: "Iniciante",
+        points: 0
       },
       {
         label: "Master",
         value: "master",
+        points: 105
       },
     ],
     iconActive: [pistol_dark, revolver_dark],
@@ -71,14 +77,17 @@ const exams = [
       {
         value: "beginner",
         label: "Iniciante",
+        points: 0
       },
       {
         value: "master",
         label: "Master",
+        points: 251
       },
       {
         label: "Super master",
         value: "super-master",
+        points: 281
       },
     ],
     iconActive: carbine_dark,
@@ -102,10 +111,12 @@ const exams = [
       {
         value: "beginner",
         label: "Iniciante",
+        points: 0
       },
       {
         label: "Master",
         value: "master",
+        points: 106
       },
     ],
     iconActive: [pistol_dark, revolver_dark],
@@ -118,10 +129,12 @@ const exams = [
       {
         value: "beginner",
         label: "Iniciante",
+        points: 0
       },
       {
         label: "Master",
         value: "master",
+        points: 86
       },
     ],
     iconActive: pistol_dark,
@@ -139,10 +152,12 @@ const exams = [
       {
         label: "Iniciante",
         value: "beginner",
+        points: 0
       },
       {
         label: "Master",
         value: "master",
+        points: 28
       },
     ],
     iconActive: carbine_dark,
