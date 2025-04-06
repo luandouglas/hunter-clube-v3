@@ -53,7 +53,7 @@ const Ranking = () => {
   };
 
   const findDuplicates = async () => {
-    const levels24Snapshot = await getDocs(collection(db, "levels-24"));
+    const levels24Snapshot = await getDocs(collection(db, "levels-25"));
     const records = {};
 
     levels24Snapshot.forEach((doc) => {
@@ -77,8 +77,8 @@ const Ranking = () => {
 
   async function mergeLevels() {
     try {
-      // Buscar documentos nas coleções levels-24 e levels
-      const levels24Snapshot = await getDocs(collection(db, "levels-24"));
+      // Buscar documentos nas coleções levels-25 e levels
+      const levels24Snapshot = await getDocs(collection(db, "levels-25"));
       const levelsSnapshot = await getDocs(collection(db, "levels"));
 
       const allLevels = [];
@@ -108,7 +108,7 @@ const Ranking = () => {
         }
       };
 
-      // Processar documentos de levels-24
+      // Processar documentos de levels-25
       levels24Snapshot.forEach((doc) => {
         const data = doc.data();
         addOrUpdateLevel({ ...data, id: doc.id });
@@ -149,8 +149,8 @@ const Ranking = () => {
 
   async function findMissingLevels() {
     try {
-      // Buscar documentos na coleção levels-24
-      const levels24Snapshot = await getDocs(collection(db, "levels-24"));
+      // Buscar documentos na coleção levels-25
+      const levels24Snapshot = await getDocs(collection(db, "levels-25"));
       const levels24Names = new Set();
 
       levels24Snapshot.forEach((doc) => {

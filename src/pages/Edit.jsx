@@ -130,7 +130,7 @@ const Register = () => {
         if (result.gun) {
           const querySnapshot = await getDocs(
             query(
-              collection(db, "levels-24"),
+              collection(db, "levels-25"),
               where("examId", "==", result.examId),
               where("name", "==", result.name),
               where("gun", "==", result.gun)
@@ -142,7 +142,7 @@ const Register = () => {
           });
 
           if (level.length > 0) {
-            const levelsCollection = collection(db, "levels-24");
+            const levelsCollection = collection(db, "levels-25");
             let aux = addOrUpdateExam(level[0], data, event.date);
 
             const q = await doc(levelsCollection, aux.id);
@@ -151,12 +151,12 @@ const Register = () => {
             await updateDoc(querySnapshot.ref, aux);
           } else {
             let newLevel = createLevel(data);
-            await addDoc(collection(db, "levels-24"), newLevel);
+            await addDoc(collection(db, "levels-25"), newLevel);
           }
         } else {
           const querySnapshot = await getDocs(
             query(
-              collection(db, "levels-24"),
+              collection(db, "levels-25"),
               where("examId", "==", result.examId),
               where("name", "==", result.name)
             )
@@ -168,14 +168,14 @@ const Register = () => {
 
           if (level.length > 0) {
             let aux = addOrUpdateExam(level[0], data, event.date);
-            const levelsCollection = collection(db, "levels-24");
+            const levelsCollection = collection(db, "levels-25");
             const q = await doc(levelsCollection, aux.id);
             const querySnapshot = await getDoc(q);
 
             await updateDoc(querySnapshot.ref, aux);
           } else {
             let newLevel = createLevel(data);
-            await addDoc(collection(db, "levels-24"), newLevel);
+            await addDoc(collection(db, "levels-25"), newLevel);
           }
         }
 

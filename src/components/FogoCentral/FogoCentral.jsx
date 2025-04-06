@@ -20,7 +20,7 @@ const FogoCentral = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     }
     const querySnapshot = await getDocs(
       query(
-        collection(db, "levels-24"),
+        collection(db, "levels-25"),
         where("name", "==", shooter.trimEnd()),
         where("gun", "==", gunType),
         where("examId", "==", examId)

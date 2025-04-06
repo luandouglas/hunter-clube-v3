@@ -3,9 +3,10 @@ import {
   getDocs,
   orderBy,
   query,
-  where
+  where,
+  addDoc
 } from "firebase/firestore";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { db } from "../../firebaseConfig";
 import Layout from "../components/Layout";
 import { exams } from "../utils";
@@ -46,7 +47,7 @@ const Home = () => {
         setShowGun(true);
         const querySnapshot = await getDocs(
           query(
-            collection(db, "levels-24"),
+            collection(db, "levels-25"),
             where("examId", "==", selectedExam),
             where("level", "==", selectedLevel),
             where("gun", "==", selectedGun),
@@ -61,7 +62,7 @@ const Home = () => {
         setCanSee(true);
         const querySnapshot = await getDocs(
           query(
-            collection(db, "levels-24"),
+            collection(db, "levels-25"),
             where("examId", "==", selectedExam),
             where("level", "==", selectedLevel),
             orderBy("pontuation", "desc")
@@ -76,7 +77,7 @@ const Home = () => {
       setCanSee(false);
       const querySnapshot = await getDocs(
         query(
-          collection(db, "levels-24"),
+          collection(db, "levels-25"),
           where("examId", "==", selectedExam),
           orderBy("pontuation", "desc")
         )
