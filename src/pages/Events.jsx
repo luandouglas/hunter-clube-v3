@@ -151,7 +151,7 @@ const Events = () => {
           <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
               <td scope="row"
                 className="px-3 py-4 font-medium whitespace-nowrap ">
-                <span className="text-gray-900 hover:text-white bg-transparent hover:bg-green-800 p-3 rounded-lg">Clube Hunter - 2024</span>
+                <span className="text-gray-900 hover:text-white bg-transparent hover:bg-green-800 p-3 rounded-lg">Clube Hunter - 2025</span>
               </td>
               <td scope="row"
                 className="pl-4 py-4 font-medium whitespace-nowrap ">
