@@ -2,8 +2,15 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 
-const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
+const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId, data }) => {
   const [values, setValues] = React.useState();
+
+  useEffect(() => {
+    if (data) {
+      setValues(data.results.points);
+    }
+  }, [data]);
+
   const fetchLevel = async () => {
     if (!shooter || !examId) {
       return;
@@ -17,16 +24,14 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     );
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
-    console.log(data[0]);
     if (data.length > 0) {
-      return { level: data[0].level }
+      return { level: data[0].level };
     } else {
-      return { level: getClassification(values) }
+      return { level: getClassification(values) };
     }
-  }
+  };
 
   const handleValueChange = (newValue, maxValue) => {
-
     const regex = /^-?\d*\.?\d*$/;
 
     if (regex.test(newValue)) {
@@ -46,9 +51,9 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   const getClassification = (total) => {
     if (total <= 8) {
-      return 'beginner';
+      return "beginner";
     } else {
-      return 'master';
+      return "master";
     }
   };
 
@@ -65,6 +70,10 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     });
   };
 
+  const onReset = () => {
+    setValues("");
+  };
+
   return (
     <>
       <div className="min-h-[460px]">
@@ -73,15 +82,22 @@ const Trap10 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
             <input
               type="text"
               value={values}
-              onChange={e => handleValueChange(e.target.value, 10)}
+              onChange={(e) => handleValueChange(e.target.value, 10)}
               placeholder="Digite aqui sua nota"
               className="flex-grow h-10 p-2 border outline-none border-gray-300 focus:outline-none"
             />
-            <button disabled={values == ""} onClick={() => onSubmit()} className="disabled:bg-gray-200 w-24 h-10 bg-gray-800 text-white hover:bg-gray-700 transition duration-200">
+            <button
+              disabled={values == ""}
+              onClick={() => onSubmit()}
+              className="disabled:bg-gray-200 w-24 h-10 bg-gray-800 text-white hover:bg-gray-700 transition duration-200"
+            >
               Submeter
             </button>
-            <button className="w-24 h-10 bg-gray-600 text-white hover:bg-gray-500 transition duration-200">
-              Ver Rank
+            <button
+              onClick={() => onReset()}
+              className="w-24 h-10 bg-gray-600 text-white hover:bg-gray-500 transition duration-200"
+            >
+              Limpar
             </button>
           </div>
         </div>

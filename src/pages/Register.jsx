@@ -87,9 +87,9 @@ const Register = () => {
       case "qnpGZ7u0IW01TZQ4olPn":
         return 7;
       case "3ZHw4gpIuBq477OGGrur":
-        return 8
-      case 'hzTpNUmS4eKFuDHzWQcs':
-        return 9
+        return 8;
+      case "hzTpNUmS4eKFuDHzWQcs":
+        return 9;
     }
   };
 
@@ -107,75 +107,10 @@ const Register = () => {
       },
       userId: result.userId,
     };
-    console.log("OBJECT", data)
+    console.log("OBJECT", data);
     try {
       const docRef = await addDoc(collection(db, "exam-results"), data);
-
-      // if (docRef) {
-      //   if (result.gun) {
-      //     const querySnapshot = await getDocs(
-      //       query(
-      //         collection(db, "levels-25"),
-      //         where("examId", "==", result.examId),
-      //         where("name", "==", result.name),
-      //         where("gun", "==", result.gun)
-      //       )
-      //     );
-      //     const level = [];
-      //     querySnapshot.forEach((e) => {
-      //       level.push({ ...e.data(), id: e.id });
-      //     });
-
-      //     if (level.length > 0) {
-      //       const levelsCollection = collection(db, "levels-25");
-      //       let aux = addOrUpdateExam(level[0], data, event.date);
-
-      //       const q = await doc(levelsCollection, aux.id);
-      //       const querySnapshot = await getDoc(q);
-
-      //       await updateDoc(querySnapshot.ref, aux);
-      //     } else {
-      //       let newLevel = createLevel(data);
-
-      //       await addDoc(collection(db, "levels-25"), newLevel);
-      //     }
-      //   } else {
-      //     const querySnapshot = await getDocs(
-      //       query(
-      //         collection(db, "levels-25"),
-      //         where("examId", "==", result.examId),
-      //         where("name", "==", result.name)
-      //       )
-      //     );
-      //     console.log(event, result.examId, result.name);
-      //     const level = [];
-      //     querySnapshot.forEach((e) => {
-      //       level.push({ ...e.data(), id: e.id });
-      //     });
-
-      //     if (level.length > 0) {
-      //       let aux = addOrUpdateExam(level[0], data, event.date);
-      //       const levelsCollection = collection(db, "levels-25");
-      //       const q = await doc(levelsCollection, aux.id);
-      //       const querySnapshot = await getDoc(q);
-
-      //       await updateDoc(querySnapshot.ref, aux);
-      //     } else {
-      //       let newLevel = createLevel(data);
-      //       console.log(newLevel);
-
-      //       await addDoc(collection(db, "levels-25"), newLevel);
-      //     }
-      //   }
-
-      //   setShowToast(true);
-      //   setTimeout(() => {
-      //     setShowToast(false);
-      //   }, 1000);
-      // }
-    } catch (error) {
-
-    }
+    } catch (error) {}
     setOpen(false);
   };
   const addOrUpdateExam = (obj, newExam, date) => {
@@ -183,7 +118,7 @@ const Register = () => {
     const totalPontuation = newExam.results?.total || 0;
 
     // Filtrar os exames da data específica '2024-06-01'
-    const examsForDate = exams.filter(exam => exam.date === date);
+    const examsForDate = exams.filter((exam) => exam.date === date);
 
     // Se houver mais de dois exames para essa data, manter apenas os dois maiores
     if (examsForDate.length >= 2) {
@@ -192,7 +127,7 @@ const Register = () => {
     }
 
     // Adicionar ou atualizar o novo exame para a data específica
-    const existingExamIndex = exams.findIndex(exam => exam.date === date);
+    const existingExamIndex = exams.findIndex((exam) => exam.date === date);
     if (existingExamIndex !== -1) {
       exams[existingExamIndex].pontuation = totalPontuation;
     } else {
@@ -209,16 +144,11 @@ const Register = () => {
     return obj;
   };
 
-
-
-
   const createLevel = (obj) => {
     let temp = {};
 
     temp.pontuation = obj.results.total;
-    temp.exams = [
-      { date: event.date, pontuation: obj.results.total },
-    ];
+    temp.exams = [{ date: event.date, pontuation: obj.results.total }];
     temp.firstRankingDate = event.date;
     if (obj.results?.level) {
       temp.level = obj.results.level;
@@ -231,14 +161,32 @@ const Register = () => {
     return temp;
   };
 
-  const returnLevel = (level) => level === 'beginner' ? 'Iniciante' : level === 'master' ? 'Master' : 'Super Master'
-
+  const returnLevel = (level) =>
+    level === "beginner"
+      ? "Iniciante"
+      : level === "master"
+      ? "Master"
+      : "Super Master";
 
   return (
     <Layout>
-      <h1 className="text-gray-700 py-4 font-bold text-xl">
-        Cadastro de resultado
-      </h1>
+      <div className="flex gap-2">
+        {!firstStep && (
+          <button onClick={() => (setFirstStep(true), setSelectedExam(""))}>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="24"
+              height="24"
+            >
+              <path d="M10.05 16.94V12.94H18.97L19 10.93H10.05V6.94L5.05 11.94Z" />
+            </svg>
+          </button>
+        )}
+        <h1 className="text-gray-700 py-4 font-bold text-xl">
+          Cadastro de resultado
+        </h1>
+      </div>
       <h2 className="text-gray-700  font-semibold text-lg">
         Selecione o atirador
       </h2>
@@ -317,9 +265,19 @@ const Register = () => {
         <>
           <div className="flex  flex-row items-center mb-4 gap-4">
             <button onClick={() => (setFirstStep(true), setSelectedExam(""))}>
-
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18" />
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={1.5}
+                stroke="currentColor"
+                className="size-6"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6.75 15.75 3 12m0 0 3.75-3.75M3 12h18"
+                />
               </svg>
             </button>
 
@@ -438,7 +396,6 @@ const Register = () => {
               }}
             />
           )}
-
         </>
       )}
 
@@ -488,30 +445,36 @@ const Register = () => {
                   <div className="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                     <div className="sm:flex sm:items-start">
                       <div className="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left">
-                        <Dialog.Title
-                          className="text-xl font-semibold leading-6 text-black"
-                        >
+                        <Dialog.Title className="text-xl font-semibold leading-6 text-black">
                           Salvar Resultado
                         </Dialog.Title>
                         <div className="mt-2">
-                          {result &&
+                          {result && (
                             <p>
-                              Você tem certeza de que deseja salvar o resultado? Uma vez salvo, não será possível corrigi-lo.
-                              Por favor, verifique o resultado antes de prosseguir.
+                              Você tem certeza de que deseja salvar o resultado?
+                              Uma vez salvo, não será possível corrigi-lo. Por
+                              favor, verifique o resultado antes de prosseguir.
                               <br />
                               <br />
-                              <span className="font-bold">Nome: {result.name}</span>
+                              <span className="font-bold">
+                                Nome: {result.name}
+                              </span>
                               <br />
-                              <span className="font-bold">Pontuação: {result.total}</span>
+                              <span className="font-bold">
+                                Pontuação: {result.total}
+                              </span>
                               <br />
-                              {result.level &&
-                                <span className="font-bold">Nível: {returnLevel(result.level)}</span>
-                              }
+                              {result.level && (
+                                <span className="font-bold">
+                                  Nível: {returnLevel(result.level)}
+                                </span>
+                              )}
                               <br />
                               <br />
-                              Se houver algum erro, por favor, contate um administrador.
+                              Se houver algum erro, por favor, contate um
+                              administrador.
                             </p>
-                          }
+                          )}
                         </div>
                       </div>
                     </div>

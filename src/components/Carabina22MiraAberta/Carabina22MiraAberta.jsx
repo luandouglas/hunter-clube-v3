@@ -2,13 +2,27 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useState, useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 
-const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
+const Carabina22MiraAberta = ({
+  onSubmitExam,
+  shooter,
+  dateEvent,
+  examId,
+  data,
+}) => {
   const [scores, setScores] = useState(Array(3).fill(Array(5).fill(0)));
   const [totalPoints, setTotalPoints] = useState(0);
-  const [classification, setClassification] = useState('');
+  const [classification, setClassification] = useState("");
   const [repeatedCounts, setRepeatedCounts] = useState({});
   const [isSubmitDisabled, setIsSubmitDisabled] = useState(true);
   const [level, setLevel] = useState(null);
+
+  useEffect(() => {
+    if (data) {
+      const { first, second, third } = data.results.points;
+      const points = [first || [], second || [], third || []];
+      setScores(points);
+    }
+  }, [data]);
 
   const fetchLevel = async () => {
     if (!shooter || !examId) {
@@ -24,18 +38,18 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     const data = [];
     querySnapshot.docs.forEach((el) => data.push(el.data()));
     if (data.length > 0) {
-      return { level: data[0].level }
+      return { level: data[0].level };
     } else {
-      return { level: getClassification(totalPoints) }
+      return { level: getClassification(totalPoints) };
     }
-  }
+  };
 
   const handleInputChange = (e, seqIndex, shotIndex) => {
     const value = parseInt(e.target.value);
-    const newValue = (value > 12) ? 12 : (value < 0) ? 0 : value; // Enforcing value range between 0 and 12
+    const newValue = value > 12 ? 12 : value < 0 ? 0 : value; // Enforcing value range between 0 and 12
     const newScores = scores.map((seq, sIndex) =>
       seq.map((shot, shIndex) =>
-        (sIndex === seqIndex && shIndex === shotIndex) ? newValue : shot
+        sIndex === seqIndex && shIndex === shotIndex ? newValue : shot
       )
     );
     setScores(newScores);
@@ -44,10 +58,12 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   const calculateTotalPoints = () => {
     const flatScores = scores.flat();
-    const total = flatScores.reduce((sum, score) => sum + (parseInt(score) || 0), 0);
+    const total = flatScores.reduce(
+      (sum, score) => sum + (parseInt(score) || 0),
+      0
+    );
     setTotalPoints(total);
-    if (classification == '') {
-
+    if (classification == "") {
       setClassification(getClassification(total));
     }
 
@@ -56,7 +72,7 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
     setIsSubmitDisabled(false); // Enable submit button after calculating total points
   };
 
-  const getClassification = (total) => total <= 140 ? 'beginner' : 'master'
+  const getClassification = (total) => (total <= 140 ? "beginner" : "master");
 
   const countPoints = (points) => {
     const result = {};
@@ -75,8 +91,6 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
     return result;
   };
-
-
 
   const checkLevel = (object, newDate) => {
     if (object && object.level && object.firstRankingDate !== newDate) {
@@ -124,16 +138,20 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
         name: shooter,
       });
     });
+  };
 
+  const onReset = () => {
+    setScores(Array(3).fill(Array(5).fill(0)));
   };
 
   return (
     <div className="min-h-[460px] p-4 bg-gray-100">
       <div className="max-w-lg mx-auto bg-white p-6  shadow-md">
-
         {scores.map((sequence, seqIndex) => (
           <div key={seqIndex} className="mb-4">
-            <h3 className="text-lg font-semibold mb-2">Sequência {seqIndex + 1}</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              Sequência {seqIndex + 1}
+            </h3>
             <div className="grid grid-cols-5 gap-2">
               {sequence.map((shot, shotIndex) => (
                 <input
@@ -160,7 +178,9 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
         {totalPoints > 0 && (
           <>
             <div className="mt-4 p-4 border border-gray-300 ">
-              <p><strong>Pontuação Total:</strong> {totalPoints}</p>
+              <p>
+                <strong>Pontuação Total:</strong> {totalPoints}
+              </p>
             </div>
           </>
         )}
@@ -168,13 +188,18 @@ const Carabina22MiraAberta = ({ onSubmitExam, shooter, dateEvent, examId }) => {
         <div className="flex flex-row items-center gap-2 mt-4">
           <button
             onClick={onSubmit}
-            className={`w-full h-10 ${isSubmitDisabled ? 'bg-gray-400' : 'bg-gray-800'} text-white  hover:bg-gray-700 transition duration-200`}
+            className={`w-full h-10 ${
+              isSubmitDisabled ? "bg-gray-400" : "bg-gray-800"
+            } text-white  hover:bg-gray-700 transition duration-200`}
             disabled={isSubmitDisabled}
           >
             Submeter
           </button>
-          <button className="w-full h-10 bg-gray-600 text-white  hover:bg-gray-500 transition duration-200">
-            Ver Rank
+          <button
+            onClick={() => onReset()}
+            className="w-full h-10 bg-gray-600 text-white  hover:bg-gray-500 transition duration-200"
+          >
+            Limpar
           </button>
         </div>
       </div>

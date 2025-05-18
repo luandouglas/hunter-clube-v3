@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect } from "react";
 
-const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
+const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId, data }) => {
   const [values, setValues] = React.useState({
     first: [false, false, false, false, false],
     second: [false, false, false, false, false],
     third: [false, false, false, false, false],
     fourth: [false, false, false, false, false],
   });
+
+  useEffect(() => {
+    if (data) {
+      setValues(data.results.points);
+    }
+  }, [data]);
 
   const countPoints = (points) => {
     let result = {};
@@ -78,13 +84,13 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
               <span className="w-24">{e}ª Serie</span>
               <div className="flex flex-row items-center">
                 <div className="flex flex-col">
-
                   <div className="flex flex-row">
                     <div className="border border-gray-400 w-14 h-[42px] flex justify-center items-center">
                       <input
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][1] || ""}
+                        checked={values[getAttr(e)][1] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),
@@ -99,6 +105,7 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][2] || ""}
+                        checked={values[getAttr(e)][2] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),
@@ -115,6 +122,7 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][3] || ""}
+                        checked={values[getAttr(e)][3] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),
@@ -129,6 +137,7 @@ const PercursoCaca = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][4] || ""}
+                        checked={values[getAttr(e)][4] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),

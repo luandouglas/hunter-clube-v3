@@ -2,7 +2,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 import React, { useCallback, useEffect } from "react";
 import { db } from "../../../firebaseConfig";
 
-const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
+const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId, data }) => {
   const [values, setValues] = React.useState({
     first: [false, false, false, false, false],
     second: [false, false, false, false, false],
@@ -13,6 +13,13 @@ const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
   const [classification, setClassification] = React.useState("")
 
   const [level, setLevel] = React.useState();
+
+  useEffect(() => {
+    if (data) {
+      setValues(data.results.points);
+    }
+  }, [data]);
+
   const fetchLevel = useCallback(async () => {
     if (!shooter || !examId) {
       return;
@@ -113,6 +120,7 @@ const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                       className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                       type="checkbox"
                       value={values[getAttr(e)][0] || ""}
+                      checked={values[getAttr(e)][0] || ""}
                       onChange={(event) =>
                         handleCheckedChange(getAttr(e), 0, event.target.checked)
                       }
@@ -124,6 +132,7 @@ const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][1] || ""}
+                        checked={values[getAttr(e)][1] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),
@@ -138,6 +147,7 @@ const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][2] || ""}
+                        checked={values[getAttr(e)][2] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),
@@ -154,6 +164,7 @@ const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][3] || ""}
+                        checked={values[getAttr(e)][3] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),
@@ -168,6 +179,7 @@ const PercursoCaca20 = ({ onSubmitExam, shooter, dateEvent, examId }) => {
                         className="focus:outline-none focus:border-gray-600 focus:shadow-none "
                         type="checkbox"
                         value={values[getAttr(e)][4] || ""}
+                        checked={values[getAttr(e)][4] || ""}
                         onChange={(event) =>
                           handleCheckedChange(
                             getAttr(e),

@@ -1,11 +1,15 @@
-import { collection, getDocs, query, where } from "firebase/firestore";
-import React, { useCallback, useEffect } from "react";
-import { db } from "../../../firebaseConfig";
+import React, { useEffect } from "react";
 
-const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
+const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId, data }) => {
   const [values, setValues] = React.useState();
-  const handleValueChange = (newValue, maxValue) => {
 
+  useEffect(() => {
+    if (data) {
+      setValues(data.results.points);
+    }
+  }, [data]);
+
+  const handleValueChange = (newValue, maxValue) => {
     const regex = /^-?\d*\.?\d*$/;
 
     if (regex.test(newValue)) {
@@ -25,12 +29,16 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
 
   const onSubmit = () => {
     onSubmitExam({
-      points: values,
-      pointsCounter: countPoints(values),
-      total: sumValues(),
+      pointsCounter: {},
+      points: Number(values),
+      total: Number(values),
       examId,
       name: shooter,
     });
+  };
+
+  const onReset = () => {
+    setValues("");
   };
 
   return (
@@ -41,15 +49,22 @@ const TrapAmericano = ({ onSubmitExam, shooter, dateEvent, examId }) => {
             <input
               type="text"
               value={values}
-              onChange={e => handleValueChange(e.target.value, 25)}
+              onChange={(e) => handleValueChange(e.target.value, 25)}
               placeholder="Digite aqui sua nota"
               className="flex-grow h-10 p-2 border outline-none border-gray-300 focus:outline-none"
             />
-            <button disabled={values == ""} onClick={() => onSubmit()} className="disabled:bg-gray-200 w-24 h-10 bg-gray-800 text-white hover:bg-gray-700 transition duration-200">
+            <button
+              disabled={values == ""}
+              onClick={() => onSubmit()}
+              className="disabled:bg-gray-200 w-24 h-10 bg-gray-800 text-white hover:bg-gray-700 transition duration-200"
+            >
               Submeter
             </button>
-            <button className="w-24 h-10 bg-gray-600 text-white hover:bg-gray-500 transition duration-200">
-              Ver Rank
+            <button
+              onClick={() => onReset()}
+              className="w-24 h-10 bg-gray-600 text-white hover:bg-gray-500 transition duration-200"
+            >
+              Limpar
             </button>
           </div>
         </div>
